@@ -21,4 +21,10 @@ public final class Constants {
     public static final int kSwerveM4Steer = 11;
     public static final int kSwerveM4Drive = 12;
   }
+
+  public static class Swerve {
+    // 1 motor rot => x output rot 
+    public static final double kSwerveSteerGearRatio = 150.0/7.0; 
+    public static final double kSwerveDriveGearRatio = 6.75;
+  }
 }
