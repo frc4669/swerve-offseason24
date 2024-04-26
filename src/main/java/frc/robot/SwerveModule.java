@@ -19,12 +19,12 @@ public class SwerveModule {
         m_positionDutyCycle = new PositionDutyCycle(0);
 
         TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig();
-        steerMotorConfig.Feedback.SensorToMechanismRatio = 360 / Swerve.kSwerveSteerGearRatio;
+        steerMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveSteerGearRatio / 360;
         steerMotorConfig.Slot0.kP = Swerve.kpSteer;
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
-        driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kWheelCircumference / Swerve.kSwerveDriveGearRatio;
+        driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveDriveGearRatio / Swerve.kWheelCircumference;
         m_driveMotor.getConfigurator().apply(driveMotorConfig);
     }
 

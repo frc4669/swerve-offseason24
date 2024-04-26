@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.*;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+// import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
+// import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import frc.robot.frc4669;
 import frc.robot.Constants;
@@ -24,7 +24,7 @@ public class Drivetrain extends SubsystemBase {
   
   private TalonFX m_SteerMotor;
   private com.ctre.phoenix6.controls.PositionDutyCycle m_SteerMotorPID; 
-  private WPI_TalonSRX m_steerEncoder;
+  // private WPI_TalonSRX m_steerEncoder;
 
 
   public Drivetrain() {
@@ -44,8 +44,8 @@ public class Drivetrain extends SubsystemBase {
     driveMotorConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.kSwerveDriveGearRatio;
     m_driveMotor.getConfigurator().apply(driveMotorConfig);
 
-    m_steerEncoder = new WPI_TalonSRX(0);
-    m_steerEncoder.configSelectedFeedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Absolute, 0, 100);
+    // m_steerEncoder = new WPI_TalonSRX(0);
+    // m_steerEncoder.configSelectedFeedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Absolute, 0, 100);
   }
 
   @Override
