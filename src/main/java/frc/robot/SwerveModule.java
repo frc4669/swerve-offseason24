@@ -47,10 +47,9 @@ public class SwerveModule {
     }
 
     public void zeroSteering(double currentAbsAngle, double targetAbsAngle) {
-        double outputAngle = Math.abs((targetAbsAngle  % 360) - currentAbsAngle);
-        if (targetAbsAngle < currentAbsAngle) outputAngle *= -1;  
+        double outputAngle = (targetAbsAngle - currentAbsAngle) % 360.0;  
         System.out.println("Angle:");
-        System.out.println(currentAbsAngle);
+        System.out.println(outputAngle);
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(outputAngle)); 
     }
 }
