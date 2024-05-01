@@ -10,7 +10,6 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -59,6 +58,10 @@ public class RobotContainer {
       double roataion = frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05);
 
       m_swerveDrivetrain.drive(forward, strafe, roataion);
+    }, m_swerveDrivetrain));
+
+    m_driverController.a().onTrue(Commands.runOnce(() -> {
+      m_swerveDrivetrain.ZeroSwerveModules();
     }, m_swerveDrivetrain));
 
   }

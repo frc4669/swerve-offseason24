@@ -31,6 +31,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain() {
     m_swerveZeroingEncoder = new WPI_TalonSRX(21);
+    m_swerveZeroingEncoder.configFeedbackNotContinuous(true, 0);
 
     m_gyro = new AHRS(SPI.Port.kMXP);
     m_kinematics = new SwerveDriveKinematics(
@@ -45,9 +46,12 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer);
     m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer);
     m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer);
+  }
 
-    double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/4096.0) * 360;
-    m_modules[1].zeroSteering(currentAbsPos, 0);
+  public void ZeroSwerveModules() {
+    double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
+    System.out.println(currentAbsPos);
+    m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
   }
 
   @Override

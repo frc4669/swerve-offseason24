@@ -31,6 +31,8 @@ public final class Constants {
   }
 
   public static class Swerve {
+    public static final double kSRXPlusePerRoatation = 4096.0; 
+
     public static final double kSwerveVelocityMultiplier = 1.0;
 
     // 1 motor rot => x output rot 
@@ -42,6 +44,8 @@ public final class Constants {
     public static final Translation2d kFrontRightOffset = new Translation2d(0.5, 0.5);
     public static final Translation2d kRearRightOffset = new Translation2d(0.5, -0.5);
     public static final Translation2d kRearLeftOffset = new Translation2d(-0.5, -0.5);
+
+    public static final double kFrontLeftZero = (1220 / kSRXPlusePerRoatation) * 360;
 
     public static final double ksDrive = 0;
     public static final double kvDrive = 0;
