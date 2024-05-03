@@ -5,7 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-
+import com.ctre.phoenix6.signals.InvertedValue; 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -44,6 +44,15 @@ public final class Constants {
     public static final Translation2d kFrontRightOffset = new Translation2d(0.5, 0.5);
     public static final Translation2d kRearRightOffset = new Translation2d(0.5, -0.5);
     public static final Translation2d kRearLeftOffset = new Translation2d(-0.5, -0.5);
+
+    public static final InvertedValue kM1DriveInverted = InvertedValue.CounterClockwise_Positive; 
+    public static final InvertedValue kM2DriveInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue kM3DriveInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kM4DriveInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kM1SteerInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kM2SteerInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kM3SteerInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kM4SteerInverted = InvertedValue.CounterClockwise_Positive;
 
     public static final double kFrontLeftZero = (1220 / kSRXPlusePerRoatation) * 360;
 

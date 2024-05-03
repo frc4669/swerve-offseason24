@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -42,32 +43,33 @@ public class SwerveDrivetrain extends SubsystemBase {
     );
 
     m_modules = new SwerveModule[4];
-    m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer);
-    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer);
-    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer);
-    m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer);
+    m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted);
+    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted);
+    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted);
+    m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer, Constants.Swerve.kM4DriveInverted, Constants.Swerve.kM4SteerInverted);
   }
 
   public void ZeroSwerveModules() {
     double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
     System.out.println(currentAbsPos);
-    m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
+    // m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("gyro angle", angle());
   }
 
   public void drive(double forward, double strafe, double rotation) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(angle()));
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(-angle()));
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.kSwerveVelocityMultiplier);
 
-    m_modules[0].setState(states[0], false, false);
-    m_modules[1].setState(states[1], false, false);
-    m_modules[2].setState(states[2], false, false);
-    m_modules[3].setState(states[3], false, false);
+    m_modules[0].setState(states[0], false, true);
+    m_modules[1].setState(states[1], false, true);
+    m_modules[2].setState(states[2], false, true);
+    m_modules[3].setState(states[3], false, true);
 
     // for (int i = 0; i < 4; i++) {
       // m_modules[i].setState(states[i], false);
