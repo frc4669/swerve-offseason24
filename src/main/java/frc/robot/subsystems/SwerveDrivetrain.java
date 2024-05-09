@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 import frc.robot.Constants;
 import frc.robot.SwerveModule;
@@ -27,11 +28,14 @@ public class SwerveDrivetrain extends SubsystemBase {
   private AHRS m_gyro;
   private SwerveDriveKinematics m_kinematics;
 
-  private WPI_TalonSRX m_swerveZeroingEncoder; 
+  private WPI_TalonSRX m_swerveZeroingEncoder;
+  private DutyCycleEncoder m_servewPWMEncoder; 
 
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain() {
     m_swerveZeroingEncoder = new WPI_TalonSRX(21);
+    m_servewPWMEncoder = new DutyCycleEncoder(9); 
+    m_servewPWMEncoder.setDutyCycleRange(1/4096, 4096/4096);
     m_swerveZeroingEncoder.configFeedbackNotContinuous(true, 0);
 
     m_gyro = new AHRS(SPI.Port.kMXP);
@@ -50,9 +54,11 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public void ZeroSwerveModules() {
-    double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
+    // double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
+    double currentAbsPos = (double)m_servewPWMEncoder.getAbsolutePosition() * 360.0; 
+    System.out.println(m_servewPWMEncoder.getAbsolutePosition());
     System.out.println(currentAbsPos);
-    // m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
+    m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
   }
 
   @Override
