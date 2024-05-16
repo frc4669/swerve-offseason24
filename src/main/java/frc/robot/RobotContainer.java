@@ -55,14 +55,14 @@ public class RobotContainer {
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
       double forward = frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05);
       double strafe = frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05);
-      double roataion = frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05);
+      double rotation = frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05);
 
-      // m_swerveDrivetrain.drive(forward, strafe, roataion);
+      m_swerveDrivetrain.drive(forward * 0.3, strafe * -0.3, rotation * 0.3);
     }, m_swerveDrivetrain));
 
-    m_driverController.a().onTrue(Commands.runOnce(() -> {
-      m_swerveDrivetrain.ZeroSwerveModules();
-    }, m_swerveDrivetrain));
+    // m_driverController.a().onTrue(Commands.runOnce(() -> {
+      // m_swerveDrivetrain.ZeroSwerveModules();
+    // }, m_swerveDrivetrain));
 
   }
 

@@ -48,8 +48,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     m_modules = new SwerveModule[4];
     m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted);
-    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted);
-    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted);
+    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted);
+    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted);
     m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer, Constants.Swerve.kM4DriveInverted, Constants.Swerve.kM4SteerInverted);
   }
 
@@ -68,7 +68,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public void drive(double forward, double strafe, double rotation) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(-angle()));
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(angle()));
+    // ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(0));
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.kSwerveVelocityMultiplier);
 

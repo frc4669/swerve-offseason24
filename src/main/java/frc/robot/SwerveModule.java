@@ -40,7 +40,10 @@ public class SwerveModule {
         state = SwerveModuleState.optimize(state, angle());
         SmartDashboard.putNumber("OutAngle", state.angle.getDegrees());
 
-        m_driveMotor.set(state.speedMetersPerSecond / Swerve.kSwerveVelocityMultiplier);
+        int id = m_steerMotor.getDeviceID();
+        SmartDashboard.putNumber(String.valueOf(id), state.angle.getDegrees());
+
+        m_driveMotor.set(state.speedMetersPerSecond);
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(state.angle.getDegrees()));
     }
 
