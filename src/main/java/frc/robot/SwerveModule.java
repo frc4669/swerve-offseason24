@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import com.ctre.phoenix6.signals.InvertedValue; 
 
@@ -51,6 +52,10 @@ public class SwerveModule {
         var pos =  m_steerMotor.getPosition().refresh().getValueAsDouble();
         SmartDashboard.putNumber("AngleSteer", pos); 
         return Rotation2d.fromDegrees(pos);
+    }
+
+    public double distanceTraveled() {
+        return m_driveMotor.getPosition().refresh().getValueAsDouble(); 
     }
 
     public void zeroSteering(double currentAbsAngle, double targetAbsAngle) {
