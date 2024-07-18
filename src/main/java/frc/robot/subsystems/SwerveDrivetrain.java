@@ -47,10 +47,15 @@ public class SwerveDrivetrain extends SubsystemBase {
     );
 
     m_modules = new SwerveModule[4];
-    m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted);
-    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted);
-    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted);
-    m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer, Constants.Swerve.kM4DriveInverted, Constants.Swerve.kM4SteerInverted);
+    m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted, Constants.Swerve.kM1PSteer);
+    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted, Constants.Swerve.kM3PSteer);
+    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted, Constants.Swerve.kM2PSteer);
+    m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer, Constants.Swerve.kM4DriveInverted, Constants.Swerve.kM4SteerInverted, Constants.Swerve.kM4PSteer);
+  
+    m_modules[0].resetAzimuth();
+    m_modules[1].resetAzimuth();
+    m_modules[2].resetAzimuth();
+    m_modules[3].resetAzimuth();
   }
 
   public void ZeroSwerveModules() {
@@ -64,7 +69,11 @@ public class SwerveDrivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("gyro angle", angle());
+    SmartDashboard.putNumber("Gyro", angle());
+    SmartDashboard.putNumber("M1 Azimuth", m_modules[0].angle().getDegrees());
+    SmartDashboard.putNumber("M2 Azimuth", m_modules[2].angle().getDegrees());
+    SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees());
+    SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees());
   }
 
   public void drive(double forward, double strafe, double rotation) {
@@ -83,11 +92,18 @@ public class SwerveDrivetrain extends SubsystemBase {
     // }
   }
 
+  public void resetSteeringPositions() {
+    m_modules[0].setState(new SwerveModuleState(0, new Rotation2d(0)), false, true);
+    m_modules[1].setState(new SwerveModuleState(0, new Rotation2d(0)), false, true);
+    m_modules[2].setState(new SwerveModuleState(0, new Rotation2d(0)), false, true);
+    m_modules[3].setState(new SwerveModuleState(0, new Rotation2d(0)), false, true);
+  }
+
   public double angle() {
     return m_gyro.getAngle();
   }
 
-  public void resetAngle(double angle) {
-    m_gyro.setAngleAdjustment(angle);
+  public void resetAngle() {
+    m_gyro.reset();
   }
 }

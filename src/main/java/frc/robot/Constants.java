@@ -41,7 +41,7 @@ public final class Constants {
     public static final double kWheelCircumference = 0.1016 * Math.PI; // meters
 
     public static final Translation2d kFrontLeftOffset = new Translation2d(-0.277, 0.296);
-    public static final Translation2d kFrontRightOffset = new Translation2d(-0.277, -0.296); // SWAP WITH REARLEFT
+    public static final Translation2d kFrontRightOffset = new Translation2d(-0.277, -0.296); // SWAPPED WITH REARLEFT
     public static final Translation2d kRearRightOffset = new Translation2d(0.277, -0.296);
     public static final Translation2d kRearLeftOffset = new Translation2d(0.277, 0.296);
 
@@ -62,7 +62,12 @@ public final class Constants {
     public static final double kpDrive = 0;
     public static final double kdDrive = 0;
 
-    public static final double kpSteer = 0.022; // Module 2
+    // public static final double kpSteer = 0.022; // Module 2
+    public static final double kM1PSteer = 0.015;
+    public static final double kM2PSteer = 0.013;
+    public static final double kM3PSteer = 0.017;
+    public static final double kM4PSteer = 0.013;
+
     public static final double kdSteer = 0;
   }
 }

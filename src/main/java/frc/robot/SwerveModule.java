@@ -6,8 +6,8 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
-import com.ctre.phoenix6.signals.InvertedValue; 
-
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.frc4669;
 import frc.robot.Constants.Swerve;
@@ -17,7 +17,7 @@ public class SwerveModule {
     private TalonFX m_steerMotor;
     private PositionDutyCycle m_positionDutyCycle;
 
-    public SwerveModule(int driveID, int steerID, InvertedValue driveInverted, InvertedValue steerInverted) {
+    public SwerveModule(int driveID, int steerID, InvertedValue driveInverted, InvertedValue steerInverted, double kpSteer) {
         m_driveMotor = new TalonFX(driveID);
         m_steerMotor = new TalonFX(steerID);
         m_positionDutyCycle = new PositionDutyCycle(0);
@@ -25,12 +25,13 @@ public class SwerveModule {
         TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig();
         steerMotorConfig.MotorOutput.Inverted = steerInverted; 
         steerMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveSteerGearRatio / 360;
-        steerMotorConfig.Slot0.kP = Swerve.kpSteer;
+        steerMotorConfig.Slot0.kP = kpSteer;
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
         steerMotorConfig.MotorOutput.Inverted = driveInverted; 
         driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveDriveGearRatio / Swerve.kWheelCircumference;
+        driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         m_driveMotor.getConfigurator().apply(driveMotorConfig);
     }
 
@@ -38,10 +39,11 @@ public class SwerveModule {
         if (!enabled) return; 
         // Add optimization
         state = SwerveModuleState.optimize(state, angle());
-        SmartDashboard.putNumber("OutAngle", state.angle.getDegrees());
 
-        int id = m_steerMotor.getDeviceID();
-        SmartDashboard.putNumber(String.valueOf(id), state.angle.getDegrees());
+        String id = String.valueOf(m_steerMotor.getDeviceID());
+
+        SmartDashboard.putNumber(id + " target", state.angle.getDegrees());
+        // SmartDashboard.putNumber(id + " actual", angle().getDegrees());
 
         m_driveMotor.set(state.speedMetersPerSecond);
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(state.angle.getDegrees()));
@@ -49,7 +51,6 @@ public class SwerveModule {
 
     public Rotation2d angle() {
         var pos =  m_steerMotor.getPosition().refresh().getValueAsDouble();
-        SmartDashboard.putNumber("AngleSteer", pos); 
         return Rotation2d.fromDegrees(pos);
     }
 
@@ -57,5 +58,9 @@ public class SwerveModule {
         double outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
         // it works, so do not change
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(m_steerMotor.getPosition().getValueAsDouble() + outputAngle)); 
+    }
+
+    public void resetAzimuth() { // PROBABLY NOT SAFE, REMOVE WHEN ABS ENCODERS ARE ADDED
+        m_steerMotor.setPosition(0);
     }
 }

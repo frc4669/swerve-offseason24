@@ -22,5 +22,9 @@ public class frc4669 {
         motorConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast; 
         motorConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive; 
         return motorConfig; 
-    }   
+    }
+
+    public static double squareInput(double input) {
+        return Math.pow(input, 2) * Math.signum(input);
+    }
 }
