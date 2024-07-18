@@ -5,7 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import com.ctre.phoenix6.signals.InvertedValue; 
+
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig; 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -40,10 +44,13 @@ public final class Constants {
     public static final double kSwerveDriveGearRatio = 6.75;
     public static final double kWheelCircumference = 0.1016 * Math.PI; // meters
 
-    public static final Translation2d kFrontLeftOffset = new Translation2d(-0.277, 0.296);
-    public static final Translation2d kFrontRightOffset = new Translation2d(-0.277, -0.296); // SWAP WITH REARLEFT
-    public static final Translation2d kRearRightOffset = new Translation2d(0.277, -0.296);
-    public static final Translation2d kRearLeftOffset = new Translation2d(0.277, 0.296);
+    public static final double kModuleXOffsetAbs = 0.277; 
+    public static final double kModuleYOffsetAbs = 0.296; 
+    public static final double kModuleDistanceToRobotCenter = Math.sqrt(Math.pow(kModuleXOffsetAbs, 2) + Math.pow(kModuleYOffsetAbs, 2)); 
+    public static final Translation2d kFrontLeftOffset = new Translation2d(-kModuleXOffsetAbs, kModuleYOffsetAbs);
+    public static final Translation2d kFrontRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAP WITH REARLEFT
+    public static final Translation2d kRearRightOffset = new Translation2d(kModuleXOffsetAbs, -kModuleYOffsetAbs);
+    public static final Translation2d kRearLeftOffset = new Translation2d(kModuleXOffsetAbs, kModuleYOffsetAbs);
 
     public static final InvertedValue kM1DriveInverted = InvertedValue.CounterClockwise_Positive; 
     public static final InvertedValue kM2DriveInverted = InvertedValue.CounterClockwise_Positive;// inv
@@ -64,5 +71,21 @@ public final class Constants {
 
     public static final double kpSteer = 0.022; // Module 2
     public static final double kdSteer = 0;
+  }
+
+  public static class Auto {
+    public static final double kAutoMaxVelocity = 0.3; // m/s
+    public static final double kAutoMaxAccel = 0.15; // m/s^2
+    public static final double kAutoMaxAngularVelocity = 0.5; // rad/s 
+    public static final double kAutoMaxAngularAccel = 0.25; // rad/s^2
+
+    public static final HolonomicPathFollowerConfig kHolonomicConfig = new HolonomicPathFollowerConfig(
+      new PIDConstants(5.0, 0.0, 0.0), // Robot Translation PID constants
+      new PIDConstants(5.0, 0.0, 0.0), // Robot Rotation PID constants
+      0.3, // max speed per module m/sec
+      Swerve.kModuleDistanceToRobotCenter, // distance from furthest module to center of robot
+      new ReplanningConfig() // Default path replanning config
+    ); 
+    
   }
 }

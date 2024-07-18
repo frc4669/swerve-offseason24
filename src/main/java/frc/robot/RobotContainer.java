@@ -10,6 +10,11 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -23,15 +28,14 @@ import frc.robot.Vision;
 public class RobotContainer {
   private final Vision m_vision = new Vision();
 
-  // The robot's subsystems and commands are defined here...
+  // subsystem init
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private SendableChooser<Command> m_autoChooser; 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -66,6 +70,9 @@ public class RobotContainer {
       // m_swerveDrivetrain.ZeroSwerveModules();
     // }, m_swerveDrivetrain));
 
+
+    this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
   /**
@@ -75,6 +82,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return m_autoChooser.getSelected(); 
   }
 }

@@ -17,6 +17,7 @@ public class SwerveModule {
     private TalonFX m_driveMotor;
     private TalonFX m_steerMotor;
     private PositionDutyCycle m_positionDutyCycle;
+    private SwerveModuleState m_state = new SwerveModuleState();
 
     public SwerveModule(int driveID, int steerID, InvertedValue driveInverted, InvertedValue steerInverted) {
         m_driveMotor = new TalonFX(driveID);
@@ -38,7 +39,7 @@ public class SwerveModule {
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
         if (!enabled) return; 
         // Add optimization
-        state = SwerveModuleState.optimize(state, angle());
+        this.m_state = SwerveModuleState.optimize(state, angle());
         SmartDashboard.putNumber("OutAngle", state.angle.getDegrees());
 
         int id = m_steerMotor.getDeviceID();
@@ -46,6 +47,10 @@ public class SwerveModule {
 
         m_driveMotor.set(state.speedMetersPerSecond);
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(state.angle.getDegrees()));
+    }
+
+    public SwerveModuleState getState() {
+        return m_state; 
     }
 
     public Rotation2d angle() {
