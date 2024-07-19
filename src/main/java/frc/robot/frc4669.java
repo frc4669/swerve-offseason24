@@ -1,14 +1,15 @@
+// DEV NOTE: Everything defined in this file must have usuage documentation
+// it is also recommonded to do CTRL+SHIFT+P and run `Fold All` so it's easier to read this file
 package frc.robot;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
+//** A general library for commonly used, non-season specific functions created by Galileo Robotics */
 public class frc4669 {
-
-    /**
-     * Applys a joystick lower bound dead zone to an input
+    /**Applys a joystick lower bound dead zone to an input
      * 
      * @param input input value 
      * @param deadzone lower deadzone
@@ -22,8 +23,7 @@ public class frc4669 {
         return 0; 
     }
 
-    /**
-     * Gets default Falcon500 Configuration
+    /**Gets default Falcon500 Configuration
      * 
      * @usuage To apply configuration call `motor.getConfigurator().apply(configuration);`
      * 
@@ -41,12 +41,16 @@ public class frc4669 {
         return motorConfig; 
     }
 
+    /**Squares input while retaining the sign (if input is negative, output is negative)
+     * 
+     * @param input input number
+     * @return input^2 * (sign of input)
+     */
     public static double squareInput(double input) {
         return Math.pow(input, 2) * Math.signum(input);
     }
 
-    /**
-     * Check if we are on the Red Alliance
+    /**Check if we are on the Red Alliance
      * <p>
      * This method can be used to determine when to apply transformations to paths, cmds, etc.
      * 
@@ -59,4 +63,37 @@ public class frc4669 {
         }
         return false;
     }
+
+    //** Small custom datalogging library that uses wpilib's DataLogManager */
+    public static class Logging {
+    //**Starts the DataLogManager with dafaults */
+    public static void StartLogger() {
+        DataLogManager.start();
+    } 
+    //** log a message */
+    public static <T> void log(T input) {
+        log(String.valueOf(input));
+    }
+    //** log mutiple messages on the same line, seperated by `; `*/
+    public static void log(String... messages) {
+        log(String.join("; ", messages));
+    }
+    //** log a message to DataLog */
+    public static void log(String message) {
+        DataLogManager.log(message);
+    }
+    //** log a info message with `INFO:` prefix */
+    public static <T> void info(T input) {
+        log("INFO:" + input);
+    }
+    //** log a warning with `WARNING:` prefix */
+    public static <T> void warn(T input) {
+        log("WARNING:" + input);
+    }
+    //** log a error with `ERROR:` prefix */
+    public static <T> void error(T input) {
+        log("ERROR:" + input);
+    }
+    }
+
 }

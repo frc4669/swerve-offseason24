@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.frc4669.Logging;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -38,6 +39,7 @@ public class RobotContainer {
   private SendableChooser<Command> m_autoChooser; 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    frc4669.Logging.StartLogger();
     // Configure the trigger bindings
     configureBindings();
   }
@@ -83,7 +85,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return m_autoChooser.getSelected(); 
   }
 }
