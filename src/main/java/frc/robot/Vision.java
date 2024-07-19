@@ -2,17 +2,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj2.command.*;
-
-import java.security.Key;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -21,10 +11,7 @@ import frc.robot.Constants;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 
 public class Vision {
@@ -35,22 +22,15 @@ public class Vision {
   
   private NetworkTable m_robotPosTable; 
 
-  private Map<String, Command> cmdMap; 
-
   public Vision() {
     this.m_nt = NetworkTableInstance.getDefault(); 
     var smartDashboardTable = m_nt.getTable("SmartDashboard"); 
     this.m_visionTable = smartDashboardTable.getSubTable("Vision"); 
     this.m_cncTable = smartDashboardTable.getSubTable("C&C"); 
     this.m_robotPosTable = m_visionTable.getSubTable("RobotPos"); 
-
-    cmdMap = new HashMap<String, Command>(); 
   }
 
-  public void register(String name, Command robotCmd) {
-    this.cmdMap.put(name, robotCmd); 
-  }
-
+  // Pose2d extended with Vision specific parameters
   public class VisionRobotPos extends Pose2d { 
     public double ts; 
     public VisionRobotPos(double x, double y, double r_deg, double ts) {
