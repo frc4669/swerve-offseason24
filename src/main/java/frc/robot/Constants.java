@@ -48,7 +48,7 @@ public final class Constants {
     public static final double kModuleYOffsetAbs = 0.296; 
     public static final double kModuleDistanceToRobotCenter = Math.sqrt(Math.pow(kModuleXOffsetAbs, 2) + Math.pow(kModuleYOffsetAbs, 2)); 
     public static final Translation2d kFrontLeftOffset = new Translation2d(-kModuleXOffsetAbs, kModuleYOffsetAbs);
-    public static final Translation2d kFrontRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAP WITH REARLEFT
+    public static final Translation2d kFrontRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAPPED WITH REARLEFT
     public static final Translation2d kRearRightOffset = new Translation2d(kModuleXOffsetAbs, -kModuleYOffsetAbs);
     public static final Translation2d kRearLeftOffset = new Translation2d(kModuleXOffsetAbs, kModuleYOffsetAbs);
 
@@ -69,7 +69,12 @@ public final class Constants {
     public static final double kpDrive = 0;
     public static final double kdDrive = 0;
 
-    public static final double kpSteer = 0.022; // Module 2
+    // public static final double kpSteer = 0.022; // Module 2
+    public static final double kM1PSteer = 0.015;
+    public static final double kM2PSteer = 0.013;
+    public static final double kM3PSteer = 0.017;
+    public static final double kM4PSteer = 0.013;
+
     public static final double kdSteer = 0;
   }
 

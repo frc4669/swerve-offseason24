@@ -41,6 +41,10 @@ public class frc4669 {
         return motorConfig; 
     }
 
+    public static double squareInput(double input) {
+        return Math.pow(input, 2) * Math.signum(input);
+    }
+
     /**
      * Check if we are on the Red Alliance
      * <p>
