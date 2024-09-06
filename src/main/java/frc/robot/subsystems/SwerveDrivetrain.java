@@ -14,6 +14,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -48,6 +49,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   private WPI_TalonSRX m_swerveZeroingEncoder;
   private DutyCycleEncoder m_swervePWMEncoder; 
 
+  private final Field2d m_field = new Field2d(); 
+
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain(Vision vision) {
     m_vision = vision;
@@ -64,10 +67,6 @@ public class SwerveDrivetrain extends SubsystemBase {
       Constants.Swerve.kRearLeftOffset
     );
 
-    // grab the current vision position or assume we start at 0, 0 with yaw 0
-    Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
-    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
-
     m_modules = new SwerveModule[4];
     m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted, Constants.Swerve.kM1PSteer);
     m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted, Constants.Swerve.kM3PSteer);
@@ -79,6 +78,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_modules[2].resetAzimuth();
     m_modules[3].resetAzimuth();
     
+    // grab the current vision position or assume we start at 0, 0 with yaw 0
+    Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
+    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
+
     // Auto set up
     AutoBuilder.configureHolonomic(
       m_odometry::getEstimatedPosition, 
@@ -89,6 +92,8 @@ public class SwerveDrivetrain extends SubsystemBase {
       frc4669::IsOnRedAlliance,
       this // Reference to this subsystem to set requirements
     );
+
+    SmartDashboard.putData(m_field);
   }
 
   public void ZeroSwerveModules() {
@@ -111,6 +116,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_odometry.update(angleRot2d(), swerveModulePositions()); 
     // if vision angles exist, fuse it with gyro measurements
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_odometry.addVisionMeasurement(pos, pos.ts)); 
+
+    m_field.setRobotPose(getRobotPose());
   }
 
   // drive using speed inputs
