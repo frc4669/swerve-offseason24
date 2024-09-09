@@ -52,7 +52,8 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(m_driveMotor.getVelocity().getValueAsDouble(), angle()); 
+        return m_state;
+        //return new SwerveModuleState(m_driveMotor.getVelocity().getValueAsDouble(), angle()); 
     }
 
     public Rotation2d angle() {

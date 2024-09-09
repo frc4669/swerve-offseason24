@@ -65,7 +65,7 @@ public class RobotContainer {
       double strafe = frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05);
       double rotation = frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05);
 
-      m_swerveDrivetrain.drive(frc4669.squareInput(forward) * 0.9, frc4669.squareInput(strafe) * -0.9, rotation * -0.9);
+      m_swerveDrivetrain.drive(frc4669.squareInput(forward) * 0.7, frc4669.squareInput(strafe) * -0.7, rotation * -0.7);
     }, m_swerveDrivetrain));
 
     // m_driverController.a().onTrue(Commands.runOnce(() -> {
