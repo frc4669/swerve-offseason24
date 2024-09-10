@@ -84,7 +84,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // Auto set up
     AutoBuilder.configureHolonomic(
-      m_odometry::getEstimatedPosition, 
+      this::getRobotPose, 
       (pos) -> m_odometry.resetPosition(angleRot2d(), swerveModulePositions(), pos), 
       () -> m_kinematics.toChassisSpeeds(m_modules[0].getState(), m_modules[1].getState(), m_modules[2].getState(), m_modules[3].getState()), 
       this::drive, 
