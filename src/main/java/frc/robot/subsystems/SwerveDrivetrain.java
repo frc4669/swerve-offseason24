@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import frc.robot.CorrectAxisSwerveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -44,7 +44,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   private AHRS m_gyro;
   private SwerveDriveKinematics m_kinematics;
-  private SwerveDrivePoseEstimator m_odometry;
+  private CorrectAxisSwerveOdometry m_odometry;
 
   private WPI_TalonSRX m_swerveZeroingEncoder;
   private DutyCycleEncoder m_swervePWMEncoder; 
@@ -80,7 +80,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     
     // grab the current vision position or assume we start at 0, 0 with yaw 0
     Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
-    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
+    m_odometry = new CorrectAxisSwerveOdometry(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
 
     // Auto set up
     AutoBuilder.configureHolonomic(
@@ -175,8 +175,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public Pose2d getRobotPose() {
-    var estimatedPos = m_odometry.getEstimatedPosition(); 
-    return new Pose2d(-estimatedPos.getX(), estimatedPos.getY(), estimatedPos.getRotation()); 
+    return m_odometry.getEstimatedPosition(); 
   }
   
 }
