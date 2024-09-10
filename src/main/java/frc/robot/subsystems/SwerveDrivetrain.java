@@ -113,7 +113,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees());
     SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees());
 
-    m_odometry.update(angleRot2d(), swerveModulePositions()); 
+    m_odometry.update(Rotation2d.fromDegrees(angle()), swerveModulePositions()); 
     // if vision angles exist, fuse it with gyro measurements
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_odometry.addVisionMeasurement(pos, pos.ts)); 
 
@@ -123,7 +123,9 @@ public class SwerveDrivetrain extends SubsystemBase {
   // drive using speed inputs
   public void drive(double forward, double strafe, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, angleRot2d());
-    // ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(0));
+
+    // FOR ROBOT RELATIVE:
+    // ChassisSpeeds speeds = new ChassisSpeeds(forward, strafe, rotation);
     drive(speeds);
   }
 
@@ -173,7 +175,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public Pose2d getRobotPose() {
-    return m_odometry.getEstimatedPosition(); 
+    var estimatedPos = m_odometry.getEstimatedPosition(); 
+    return new Pose2d(-estimatedPos.getX(), estimatedPos.getY(), estimatedPos.getRotation()); 
   }
   
 }

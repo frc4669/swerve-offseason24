@@ -40,7 +40,7 @@ public class SwerveModule {
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
         if (!enabled) return; 
         // Add optimization
-        this.m_state = SwerveModuleState.optimize(state, angle());
+        state = SwerveModuleState.optimize(state, angle());
 
         String id = String.valueOf(m_steerMotor.getDeviceID());
 
@@ -52,12 +52,11 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return m_state;
-        //return new SwerveModuleState(m_driveMotor.getVelocity().getValueAsDouble(), angle()); 
+        return new SwerveModuleState(m_driveMotor.getVelocity().getValueAsDouble(), angle()); 
     }
 
     public Rotation2d angle() {
-        var pos =  m_steerMotor.getPosition().refresh().getValueAsDouble();
+        var pos = m_steerMotor.getPosition().refresh().getValueAsDouble();
         return Rotation2d.fromDegrees(pos);
     }
 
