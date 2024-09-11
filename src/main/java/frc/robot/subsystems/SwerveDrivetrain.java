@@ -87,7 +87,10 @@ public class SwerveDrivetrain extends SubsystemBase {
       this::getRobotPose, 
       (pos) -> m_odometry.resetPosition(angleRot2d(), swerveModulePositions(), pos), 
       () -> m_kinematics.toChassisSpeeds(m_modules[0].getState(), m_modules[1].getState(), m_modules[2].getState(), m_modules[3].getState()), 
-      this::drive, 
+      (speeds) -> {
+        speeds.vxMetersPerSecond *= -1;
+        this.drive(speeds, false);
+      }, 
       Constants.Auto.kHolonomicConfig, 
       frc4669::IsOnRedAlliance,
       this // Reference to this subsystem to set requirements
@@ -126,18 +129,18 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     // FOR ROBOT RELATIVE:
     // ChassisSpeeds speeds = new ChassisSpeeds(forward, strafe, rotation);
-    drive(speeds);
+    drive(speeds, false);
   }
 
   // drive using ChassisSpeeds
-  public void drive(ChassisSpeeds speeds) {
+  public void drive(ChassisSpeeds speeds, boolean usePID) {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.kSwerveVelocityMultiplier);
 
-    m_modules[0].setState(states[0], false, true);
-    m_modules[1].setState(states[1], false, true);
-    m_modules[2].setState(states[2], false, true);
-    m_modules[3].setState(states[3], false, true);
+    m_modules[0].setState(states[0], usePID, true);
+    m_modules[1].setState(states[1], usePID, true);
+    m_modules[2].setState(states[2], usePID, true);
+    m_modules[3].setState(states[3], usePID, true);
 
     // for (int i = 0; i < 4; i++) {
       // m_modules[i].setState(states[i], false);
@@ -153,7 +156,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // get gyro angle
   public double angle() {
-    return m_gyro.getAngle();
+    return -m_gyro.getAngle();
   }
 
   public Rotation2d angleRot2d() {
