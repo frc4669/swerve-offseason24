@@ -21,23 +21,18 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
-  }
-
-  public static class CAN {
-    public static final int kSwerveM1Steer = 11;
-    public static final int kSwerveM1Drive = 12;
-    public static final int kSwerveM2Steer = 13;
-    public static final int kSwerveM2Drive = 14;
-    public static final int kSwerveM3Steer = 15;
-    public static final int kSwerveM3Drive = 16;
-    public static final int kSwerveM4Steer = 17;
-    public static final int kSwerveM4Drive = 18;
+    public static final double kMovementMultiplier = 0.5;
+    public static final double kRotationMultiplier = 0.5;
   }
 
   public static class Swerve {
     public static final double kSRXPlusePerRoatation = 4096.0; 
 
-    public static final double kSwerveVelocityMultiplier = 0.5;
+    public static final double kSpeedLimit = 3.0; // m/s
+    public static final double kMaxAttainableSpeed = 5.0; // m/s
+    public static final double kSpeedFactor = kSpeedLimit / kMaxAttainableSpeed;
+
+    public static final double kMaxAngularSpeed = 2.4; // rad/s (<motor vel at max voltage> * 2pi) / <gear ratio>
 
     // 1 motor rot => x output rot 
     public static final double kSwerveSteerGearRatio = 150.0/7.0; 
@@ -51,31 +46,34 @@ public final class Constants {
     public static final Translation2d kFrontRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAPPED WITH REARLEFT
     public static final Translation2d kRearRightOffset = new Translation2d(kModuleXOffsetAbs, -kModuleYOffsetAbs);
     public static final Translation2d kRearLeftOffset = new Translation2d(kModuleXOffsetAbs, kModuleYOffsetAbs);
-
-    public static final InvertedValue kM1DriveInverted = InvertedValue.CounterClockwise_Positive; 
-    public static final InvertedValue kM2DriveInverted = InvertedValue.CounterClockwise_Positive;// inv
-    public static final InvertedValue kM3DriveInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue kM4DriveInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue kM1SteerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue kM2SteerInverted = InvertedValue.CounterClockwise_Positive; // fuck
-    public static final InvertedValue kM3SteerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue kM4SteerInverted = InvertedValue.CounterClockwise_Positive; // fuck
     public static final double kFrontLeftZero = (1220 / kSRXPlusePerRoatation) * 360;
 
     public static final double ksDrive = 0;
     public static final double kvDrive = 0;
     public static final double kaDrive = 0;
 
-    public static final double kpDrive = 0;
+    public static final double kpDrive = 0.8; // 0.75
     public static final double kdDrive = 0;
 
-    // public static final double kpSteer = 0.022; // Module 2
-    public static final double kM1PSteer = 0.015;
-    public static final double kM2PSteer = 0.013;
-    public static final double kM3PSteer = 0.017;
-    public static final double kM4PSteer = 0.013;
+    public static final SwerveModuleConfig M1 = new SwerveModuleConfig(
+      12, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
+      11, InvertedValue.CounterClockwise_Positive, 0.015
+    );
 
-    public static final double kdSteer = 0;
+    public static final SwerveModuleConfig M2 = new SwerveModuleConfig(
+      14, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
+      13, InvertedValue.CounterClockwise_Positive, 0.013
+    );
+
+    public static final SwerveModuleConfig M3 = new SwerveModuleConfig(
+      16, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
+      15, InvertedValue.CounterClockwise_Positive, 0.017
+    );
+
+    public static final SwerveModuleConfig M4 = new SwerveModuleConfig(
+      18, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
+      17, InvertedValue.CounterClockwise_Positive, 0.013
+    );
   }
 
   public static class Auto {
@@ -86,8 +84,8 @@ public final class Constants {
 
     public static final HolonomicPathFollowerConfig kHolonomicConfig = new HolonomicPathFollowerConfig(
       new PIDConstants(5.0, 0.0, 0.0), // Robot Translation PID constants
-      new PIDConstants(5.0, 0.0, 0.0), // Robot Rotation PID constants
-      0.3, // max speed per module m/sec
+      new PIDConstants(7.0, 0.0, 0.0), // Robot Rotation PID constants
+      1, // max speed per module m/sec
       Swerve.kModuleDistanceToRobotCenter, // distance from furthest module to center of robot
       new ReplanningConfig() // Default path replanning config
     ); 

@@ -11,7 +11,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -20,6 +23,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.CorrectAxisSwerveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -51,6 +57,9 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   private final Field2d m_field = new Field2d(); 
 
+  private double m_prevAngle = 0; 
+  private long m_prevTime = 0;
+
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain(Vision vision) {
     m_vision = vision;
@@ -68,11 +77,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     );
 
     m_modules = new SwerveModule[4];
-    m_modules[0] = new SwerveModule(Constants.CAN.kSwerveM1Drive, Constants.CAN.kSwerveM1Steer, Constants.Swerve.kM1DriveInverted, Constants.Swerve.kM1SteerInverted, Constants.Swerve.kM1PSteer);
-    m_modules[1] = new SwerveModule(Constants.CAN.kSwerveM3Drive, Constants.CAN.kSwerveM3Steer, Constants.Swerve.kM3DriveInverted, Constants.Swerve.kM3SteerInverted, Constants.Swerve.kM3PSteer);
-    m_modules[2] = new SwerveModule(Constants.CAN.kSwerveM2Drive, Constants.CAN.kSwerveM2Steer, Constants.Swerve.kM2DriveInverted, Constants.Swerve.kM2SteerInverted, Constants.Swerve.kM2PSteer);
-    m_modules[3] = new SwerveModule(Constants.CAN.kSwerveM4Drive, Constants.CAN.kSwerveM4Steer, Constants.Swerve.kM4DriveInverted, Constants.Swerve.kM4SteerInverted, Constants.Swerve.kM4PSteer);
-  
+    m_modules[0] = new SwerveModule(Constants.Swerve.M1);
+    m_modules[1] = new SwerveModule(Constants.Swerve.M3);
+    m_modules[2] = new SwerveModule(Constants.Swerve.M2);
+    m_modules[3] = new SwerveModule(Constants.Swerve.M4);
+
     m_modules[0].resetAzimuth();
     m_modules[1].resetAzimuth();
     m_modules[2].resetAzimuth();
@@ -89,7 +98,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       () -> m_kinematics.toChassisSpeeds(m_modules[0].getState(), m_modules[1].getState(), m_modules[2].getState(), m_modules[3].getState()), 
       (speeds) -> {
         speeds.vxMetersPerSecond *= -1;
-        this.drive(speeds, false);
+        this.drive(speeds, true);
       }, 
       Constants.Auto.kHolonomicConfig, 
       frc4669::IsOnRedAlliance,
@@ -116,7 +125,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees());
     SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees());
 
-    m_odometry.update(Rotation2d.fromDegrees(angle()), swerveModulePositions()); 
+    m_odometry.update(Rotation2d.fromDegrees(-angle()), swerveModulePositions()); 
     // if vision angles exist, fuse it with gyro measurements
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_odometry.addVisionMeasurement(pos, pos.ts)); 
 
@@ -126,6 +135,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   // drive using speed inputs
   public void drive(double forward, double strafe, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, angleRot2d());
+    SmartDashboard.putNumber("rotation input", rotation);
 
     // FOR ROBOT RELATIVE:
     // ChassisSpeeds speeds = new ChassisSpeeds(forward, strafe, rotation);
@@ -135,16 +145,12 @@ public class SwerveDrivetrain extends SubsystemBase {
   // drive using ChassisSpeeds
   public void drive(ChassisSpeeds speeds, boolean usePID) {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.kSwerveVelocityMultiplier);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Swerve.kSpeedLimit);
 
     m_modules[0].setState(states[0], usePID, true);
     m_modules[1].setState(states[1], usePID, true);
     m_modules[2].setState(states[2], usePID, true);
     m_modules[3].setState(states[3], usePID, true);
-
-    // for (int i = 0; i < 4; i++) {
-      // m_modules[i].setState(states[i], false);
-    // }
   }
 
   public void resetSteeringPositions() {
@@ -156,7 +162,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // get gyro angle
   public double angle() {
-    return -m_gyro.getAngle();
+    return m_gyro.getAngle();
   }
 
   public Rotation2d angleRot2d() {

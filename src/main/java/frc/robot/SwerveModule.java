@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
@@ -12,42 +13,44 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.frc4669;
 import frc.robot.Constants.Swerve;
+import frc.robot.SwerveModuleConfig;
 
 public class SwerveModule {
     private TalonFX m_driveMotor;
     private TalonFX m_steerMotor;
     private PositionDutyCycle m_positionDutyCycle;
+    private VelocityDutyCycle m_velocityDutyCycle;
     private SwerveModuleState m_state = new SwerveModuleState();
 
-    public SwerveModule(int driveID, int steerID, InvertedValue driveInverted, InvertedValue steerInverted, double kpSteer) {
-        m_driveMotor = new TalonFX(driveID);
-        m_steerMotor = new TalonFX(steerID);
-        m_positionDutyCycle = new PositionDutyCycle(0);
+    public SwerveModule(SwerveModuleConfig config) {
+        m_driveMotor = new TalonFX(config.driveID);
+        m_steerMotor = new TalonFX(config.steerID);
+        m_positionDutyCycle = new PositionDutyCycle(0); // Steer PID control
+        m_velocityDutyCycle = new VelocityDutyCycle(0); // Drive PID control
 
         TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig();
-        steerMotorConfig.MotorOutput.Inverted = steerInverted; 
+        steerMotorConfig.MotorOutput.Inverted = config.steerInverted; 
         steerMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveSteerGearRatio / 360;
-        steerMotorConfig.Slot0.kP = kpSteer;
+        steerMotorConfig.Slot0.kP = config.kpSteer;
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
-        steerMotorConfig.MotorOutput.Inverted = driveInverted; 
+        steerMotorConfig.MotorOutput.Inverted = config.driveInverted; 
         driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveDriveGearRatio / Swerve.kWheelCircumference;
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        driveMotorConfig.Slot0.kP = config.kpDrive;
+        driveMotorConfig.Slot0.kD = config.kdDrive;
         m_driveMotor.getConfigurator().apply(driveMotorConfig);
     }
 
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
-        if (!enabled) return; 
-        // Add optimization
+        if (!enabled) return;
+        
         state = SwerveModuleState.optimize(state, angle());
 
-        String id = String.valueOf(m_steerMotor.getDeviceID());
+        if (usePID) m_driveMotor.setControl(m_velocityDutyCycle.withVelocity(state.speedMetersPerSecond));
+        else m_driveMotor.set(state.speedMetersPerSecond/*/ Swerve.kMaxAttainableSpeed*/);
 
-        SmartDashboard.putNumber(id + " target", state.angle.getDegrees());
-        // SmartDashboard.putNumber(id + " actual", angle().getDegrees());
-
-        m_driveMotor.set(state.speedMetersPerSecond);
         m_steerMotor.setControl(m_positionDutyCycle.withPosition(state.angle.getDegrees()));
     }
 
@@ -56,7 +59,7 @@ public class SwerveModule {
     }
 
     public Rotation2d angle() {
-        var pos = m_steerMotor.getPosition().refresh().getValueAsDouble();
+        double pos = m_steerMotor.getPosition().refresh().getValueAsDouble();
         return Rotation2d.fromDegrees(pos);
     }
 

@@ -60,12 +60,11 @@ public class RobotContainer {
     // }, m_drivetrain));
     
     // NOTE!!!!: Y axes are negative ON THE CONTROLLER, the others are not
-    // FUTURE NOTE FOR ALL ODOMETRY/MOVEMENT: left is positive, forward is positive, up is positive
     // Rotation should be CCW positive
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
-      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05)) * 0.7;
-      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05)) * 0.7;
-      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05)) * 0.7;
+      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
 
       m_swerveDrivetrain.drive(forward, strafe, rotation);
     }, m_swerveDrivetrain));
