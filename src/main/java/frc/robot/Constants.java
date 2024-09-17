@@ -28,11 +28,11 @@ public final class Constants {
   public static class Swerve {
     public static final double kSRXPlusePerRoatation = 4096.0; 
 
-    public static final double kSpeedLimit = 3.0; // m/s
+    public static final double kSpeedLimit = 1.5;// 3.0; // m/s
     public static final double kMaxAttainableSpeed = 5.0; // m/s
     public static final double kSpeedFactor = kSpeedLimit / kMaxAttainableSpeed;
 
-    public static final double kMaxAngularSpeed = 2.4; // rad/s (<motor vel at max voltage> * 2pi) / <gear ratio>
+    public static final double kMaxAngularSpeed = 2.0;// 2.4; // rad/s (<motor vel at max voltage> * 2pi) / <gear ratio>
 
     // 1 motor rot => x output rot 
     public static final double kSwerveSteerGearRatio = 150.0/7.0; 

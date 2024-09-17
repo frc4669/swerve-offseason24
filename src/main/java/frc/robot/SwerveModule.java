@@ -46,7 +46,7 @@ public class SwerveModule {
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
         if (!enabled) return;
         
-        state = SwerveModuleState.optimize(state, angle());
+        state = frc4669.SwerveOptimizeAngle(state, angle());
 
         if (usePID) m_driveMotor.setControl(m_velocityDutyCycle.withVelocity(state.speedMetersPerSecond));
         else m_driveMotor.set(state.speedMetersPerSecond/*/ Swerve.kMaxAttainableSpeed*/);
