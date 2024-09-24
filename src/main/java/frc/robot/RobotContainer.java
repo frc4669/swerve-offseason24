@@ -13,6 +13,7 @@ import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +38,14 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private SendableChooser<Command> m_autoChooser; 
+
+  private Command IncrNumStepsUsed() {
+    return new InstantCommand(() -> {
+      double old = SmartDashboard.getNumber("Steps Used", 0); 
+      SmartDashboard.putNumber("Steps Used", old + 1); 
+    });
+  }
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     frc4669.Logging.StartLogger();
@@ -54,14 +63,14 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // m_drivetrain.setDefaultCommand(new RunCommand(()->{
-    //   m_drivetrain.SetSwerveOutput(m_driverController.getLeftX(), m_driverController.getRightY());
-      
-    // }, m_drivetrain));
-    
+
+    SmartDashboard.putBoolean("MAZE_JOYCTRL_ENABLED", false); 
+    SmartDashboard.putNumber("Steps Used", 0); 
+
     // NOTE!!!!: Y axes are negative ON THE CONTROLLER, the others are not
     // Rotation should be CCW positive
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
+      if (! SmartDashboard.getBoolean("MAZE_JOYCTRL_ENABLED", false)) return; 
       double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
       double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
       double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
@@ -69,12 +78,22 @@ public class RobotContainer {
       m_swerveDrivetrain.drive(forward, strafe, rotation);
     }, m_swerveDrivetrain));
 
+    PathPlannerPath MAZE_UP = PathPlannerPath.fromPathFile("MAZE_PATH_UP");
+    PathPlannerPath MAZE_DOWN = PathPlannerPath.fromPathFile("MAZE_PATH_DOWN");
+    PathPlannerPath MAZE_LEFT = PathPlannerPath.fromPathFile("MAZE_PATH_LEFT");
+    PathPlannerPath MAZE_RIGHT = PathPlannerPath.fromPathFile("MAZE_PATH_RIGHT");
+    m_driverController.povUp().onTrue(Commands.parallel(IncrNumStepsUsed(), AutoBuilder.followPath(MAZE_UP)));
+    m_driverController.povDown().onTrue(Commands.parallel(IncrNumStepsUsed(), AutoBuilder.followPath(MAZE_DOWN)));
+    m_driverController.povLeft().onTrue(Commands.parallel(IncrNumStepsUsed(), AutoBuilder.followPath(MAZE_LEFT)));
+    m_driverController.povRight().onTrue(Commands.parallel(IncrNumStepsUsed(), AutoBuilder.followPath(MAZE_RIGHT)));
+
+
     // m_driverController.a().onTrue(Commands.runOnce(() -> {
       // m_swerveDrivetrain.ZeroSwerveModules();
     // }, m_swerveDrivetrain));
 
-    m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
-    m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
+    m_driverController.y().onTrue(Commands.runOnce(() -> {if (! SmartDashboard.getBoolean("MAZE_JOYCTRL_ENABLED", false)) return; m_swerveDrivetrain.resetSteeringPositions();}, m_swerveDrivetrain));
+    m_driverController.a().onTrue(Commands.runOnce(() -> {if (! SmartDashboard.getBoolean("MAZE_JOYCTRL_ENABLED", false)) return; m_swerveDrivetrain.resetAngle(); }, m_swerveDrivetrain));
 
     this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
