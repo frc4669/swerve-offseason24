@@ -1,5 +1,5 @@
 // DEV NOTE: Everything defined in this file must have usuage documentation
-// it is also recommonded to do CTRL+SHIFT+P and run `Fold All` so it's easier to read this file
+// it is also recommonded to do CTRL+K then CTRL-0 so it's easier to read this file
 package frc.robot;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
