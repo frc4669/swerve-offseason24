@@ -35,7 +35,7 @@ public class SwerveModule {
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
-        steerMotorConfig.MotorOutput.Inverted = config.driveInverted; 
+        driveMotorConfig.MotorOutput.Inverted = config.driveInverted; 
         driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveDriveGearRatio / Swerve.kWheelCircumference;
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         driveMotorConfig.Slot0.kP = config.kpDrive;
