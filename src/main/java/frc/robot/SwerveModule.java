@@ -3,7 +3,10 @@ package frc.robot;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,15 +21,14 @@ import frc.robot.SwerveModuleConfig;
 public class SwerveModule {
     private TalonFX m_driveMotor;
     private TalonFX m_steerMotor;
-    private PositionDutyCycle m_positionDutyCycle;
-    private VelocityDutyCycle m_velocityDutyCycle;
-    private SwerveModuleState m_state = new SwerveModuleState();
+    private PositionVoltage m_steerPositionCtrl;
+    private VelocityVoltage m_driveVelocityCtrl;
 
     public SwerveModule(SwerveModuleConfig config) {
         m_driveMotor = new TalonFX(config.driveID);
         m_steerMotor = new TalonFX(config.steerID);
-        m_positionDutyCycle = new PositionDutyCycle(0); // Steer PID control
-        m_velocityDutyCycle = new VelocityDutyCycle(0); // Drive PID control
+        m_steerPositionCtrl = new PositionVoltage(0); // Steer PID control
+        m_driveVelocityCtrl = new VelocityVoltage(0); // Drive PID control
 
         TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig();
         steerMotorConfig.MotorOutput.Inverted = config.steerInverted; 
@@ -48,10 +50,10 @@ public class SwerveModule {
         
         state = frc4669.SwerveOptimizeAngle(state, angle());
 
-        if (usePID) m_driveMotor.setControl(m_velocityDutyCycle.withVelocity(state.speedMetersPerSecond));
+        if (usePID) m_driveMotor.setControl(m_driveVelocityCtrl.withVelocity(state.speedMetersPerSecond));
         else m_driveMotor.set(state.speedMetersPerSecond/*/ Swerve.kMaxAttainableSpeed*/);
 
-        m_steerMotor.setControl(m_positionDutyCycle.withPosition(state.angle.getDegrees()));
+        m_steerMotor.setControl(m_steerPositionCtrl.withPosition(state.angle.getDegrees()));
     }
 
     public SwerveModuleState getState() {
@@ -70,7 +72,7 @@ public class SwerveModule {
     public void zeroSteering(double currentAbsAngle, double targetAbsAngle) {
         double outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
         // it works, so do not change
-        m_steerMotor.setControl(m_positionDutyCycle.withPosition(m_steerMotor.getPosition().getValueAsDouble() + outputAngle)); 
+        m_steerMotor.setControl(m_steerPositionCtrl.withPosition(m_steerMotor.getPosition().getValueAsDouble() + outputAngle)); 
     }
 
     public void resetAzimuth() { // PROBABLY NOT SAFE, REMOVE WHEN ABS ENCODERS ARE ADDED
