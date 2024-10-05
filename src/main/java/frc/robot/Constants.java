@@ -83,9 +83,9 @@ public final class Constants {
     public static final double kAutoMaxAngularAccel = 0.25; // rad/s^2
 
     public static final HolonomicPathFollowerConfig kHolonomicConfig = new HolonomicPathFollowerConfig(
-      new PIDConstants(5.0, 0.0, 0.0), // Robot Translation PID constants
-      new PIDConstants(7.0, 0.0, 0.0), // Robot Rotation PID constants
-      1, // max speed per module m/sec
+      new PIDConstants(1, 0.0, 0.0), // Robot Translation PID constants
+      new PIDConstants(1.0, 0.0, 0.0), // Robot Rotation PID constants
+      6, // max speed per module m/sec
       Swerve.kModuleDistanceToRobotCenter, // distance from furthest module to center of robot
       new ReplanningConfig() // Default path replanning config
     ); 

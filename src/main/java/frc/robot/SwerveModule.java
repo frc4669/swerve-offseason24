@@ -21,14 +21,14 @@ import frc.robot.SwerveModuleConfig;
 public class SwerveModule {
     private TalonFX m_driveMotor;
     private TalonFX m_steerMotor;
-    private PositionVoltage m_steerPositionCtrl;
-    private VelocityVoltage m_driveVelocityCtrl;
+    private PositionDutyCycle m_steerPositionCtrl;
+    private VelocityDutyCycle m_driveVelocityCtrl;
 
     public SwerveModule(SwerveModuleConfig config) {
         m_driveMotor = new TalonFX(config.driveID);
         m_steerMotor = new TalonFX(config.steerID);
-        m_steerPositionCtrl = new PositionVoltage(0); // Steer PID control
-        m_driveVelocityCtrl = new VelocityVoltage(0); // Drive PID control
+        m_steerPositionCtrl = new PositionDutyCycle(0); // Steer PID control
+        m_driveVelocityCtrl = new VelocityDutyCycle(0); // Drive PID control
 
         TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig();
         steerMotorConfig.MotorOutput.Inverted = config.steerInverted; 
@@ -41,7 +41,7 @@ public class SwerveModule {
         driveMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveDriveGearRatio / Swerve.kWheelCircumference;
         driveMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         driveMotorConfig.Slot0.kP = config.kpDrive;
-        driveMotorConfig.Slot0.kD = config.kdDrive;
+        // driveMotorConfig.Slot0.kD = config.kdDrive;
         m_driveMotor.getConfigurator().apply(driveMotorConfig);
     }
 

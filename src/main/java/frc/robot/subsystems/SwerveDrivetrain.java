@@ -97,7 +97,8 @@ public class SwerveDrivetrain extends SubsystemBase {
       (pos) -> m_odometry.resetPosition(angleRot2d(), swerveModulePositions(), pos), 
       () -> m_kinematics.toChassisSpeeds(m_modules[0].getState(), m_modules[1].getState(), m_modules[2].getState(), m_modules[3].getState()), 
       (speeds) -> {
-        speeds.vxMetersPerSecond *= -1;
+        speeds.vxMetersPerSecond *= -1.0;
+        SmartDashboard.putNumber("Commanded Vel", speeds.vxMetersPerSecond);        
         this.drive(speeds, true);
       }, 
       Constants.Auto.kHolonomicConfig, 
@@ -145,7 +146,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   // drive using ChassisSpeeds
   public void drive(ChassisSpeeds speeds, boolean usePID) {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Swerve.kSpeedLimit);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Swerve.kMaxAttainableSpeed);
 
     m_modules[0].setState(states[0], usePID, true);
     m_modules[1].setState(states[1], usePID, true);
