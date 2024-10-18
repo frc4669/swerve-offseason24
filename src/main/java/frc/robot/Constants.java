@@ -57,22 +57,26 @@ public final class Constants {
 
     public static final SwerveModuleConfig M1 = new SwerveModuleConfig(
       12, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      11, InvertedValue.CounterClockwise_Positive, 0.015
+      11, InvertedValue.CounterClockwise_Positive, 0.015, 
+      9, 0.2076
     );
 
     public static final SwerveModuleConfig M2 = new SwerveModuleConfig(
       14, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      13, InvertedValue.CounterClockwise_Positive, 0.013
+      13, InvertedValue.CounterClockwise_Positive, 0.013, 
+      8, 0.4906
     );
 
     public static final SwerveModuleConfig M3 = new SwerveModuleConfig(
       16, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      15, InvertedValue.CounterClockwise_Positive, 0.017
+      15, InvertedValue.CounterClockwise_Positive, 0.017, 
+      7, 0.1715
     );
 
     public static final SwerveModuleConfig M4 = new SwerveModuleConfig(
       18, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      17, InvertedValue.CounterClockwise_Positive, 0.013
+      17, InvertedValue.CounterClockwise_Positive, 0.013, 
+      6, 0.1667
     );
   }
 

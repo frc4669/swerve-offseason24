@@ -74,11 +74,14 @@ public class RobotContainer {
       // m_swerveDrivetrain.ZeroSwerveModules();
     // }, m_swerveDrivetrain));
 
+    m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
     m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
     m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
 
     this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
+
+    // m_swerveDrivetrain.ZeroSwerveModules();
   }
 
   /**

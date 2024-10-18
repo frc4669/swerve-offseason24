@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 //** A general library for commonly used, non-season specific functions created by Galileo Robotics */
 public class frc4669 {
@@ -41,6 +42,12 @@ public class frc4669 {
         motorConfig.MotorOutput.NeutralMode = com.ctre.phoenix6.signals.NeutralModeValue.Coast; 
         motorConfig.MotorOutput.Inverted = com.ctre.phoenix6.signals.InvertedValue.CounterClockwise_Positive; 
         return motorConfig; 
+    }
+
+    public static DutyCycleEncoder GetSRXEncoderOnRIODIO(int channelID) {
+        var encoder = new DutyCycleEncoder(channelID); 
+        encoder.setDutyCycleRange(1/4096, 4096/4096);
+        return encoder; 
     }
 
     /**Squares input while retaining the sign (if input is negative, output is negative)

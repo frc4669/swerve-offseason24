@@ -12,7 +12,19 @@ public class SwerveModuleConfig {
   public InvertedValue steerInverted;
   public double kpSteer;
 
-  public SwerveModuleConfig(int driveID, InvertedValue driveInverted, double kpDrive, double kdDrive, int steerID, InvertedValue steerInverted, double kpSteer) {
+  public int absoulteEncoderCID;
+  public double steerAlignedAbsPosition; // rotations 
+
+  public SwerveModuleConfig(int driveID, 
+    InvertedValue driveInverted, 
+    double kpDrive, 
+    double kdDrive, 
+    int steerID, 
+    InvertedValue steerInverted, 
+    double kpSteer, 
+    int absoulteEncoderCID, 
+    double steerAlignedAbsPosition) 
+    {
     this.driveID = driveID;
     this.driveInverted = driveInverted;
     this.kpDrive = kpDrive;
@@ -21,5 +33,8 @@ public class SwerveModuleConfig {
     this.steerID = steerID;
     this.steerInverted = steerInverted;
     this.kpSteer = kpSteer;
+
+    this.absoulteEncoderCID = absoulteEncoderCID; 
+    this.steerAlignedAbsPosition = steerAlignedAbsPosition;
   }
 }
