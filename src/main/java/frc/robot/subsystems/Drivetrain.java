@@ -28,7 +28,7 @@ public class Drivetrain extends SubsystemBase {
 
 
   public Drivetrain() {
-    m_SteerMotor = new TalonFX(Constants.CAN.kSwerveM4Steer); 
+    m_SteerMotor = new TalonFX(Constants.Swerve.M1.steerID); 
     m_SteerMotor.setSafetyEnabled(false);
     TalonFXConfiguration steerMotorConfig = frc4669.GetFalcon500DefaultConfig(); 
     steerMotorConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.kSwerveSteerGearRatio; 
@@ -38,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
     m_SteerMotorPID = new PositionDutyCycle(0); 
 
 
-    m_driveMotor = new TalonFX(Constants.CAN.kSwerveM4Drive); 
+    m_driveMotor = new TalonFX(Constants.Swerve.M1.steerID); 
     m_driveMotor.setSafetyEnabled(false);
     TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
     driveMotorConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.kSwerveDriveGearRatio;

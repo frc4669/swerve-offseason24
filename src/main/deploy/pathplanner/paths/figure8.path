@@ -1,0 +1,100 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 5.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9850139700279412,
+        "y": 5.811629315566324
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.5,
+        "y": 5.0
+      },
+      "prevControl": {
+        "x": 3.463478261771566,
+        "y": 6.038229560431183
+      },
+      "nextControl": {
+        "x": 3.5439909341357163,
+        "y": 3.7494382681073057
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.0,
+        "y": 5.0
+      },
+      "prevControl": {
+        "x": 4.995093015553553,
+        "y": 4.050944599107943
+      },
+      "nextControl": {
+        "x": 5.004298470135403,
+        "y": 5.8313632011879415
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.5,
+        "y": 5.0
+      },
+      "prevControl": {
+        "x": 3.4798532537034683,
+        "y": 6.038656864043032
+      },
+      "nextControl": {
+        "x": 3.5242570485140985,
+        "y": 3.7494382681073057
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 5.0
+      },
+      "prevControl": {
+        "x": 1.9751470272171325,
+        "y": 4.193450694593698
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 600.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

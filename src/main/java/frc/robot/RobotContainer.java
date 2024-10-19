@@ -6,14 +6,21 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.frc4669.Logging;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
+
+import java.util.ArrayList;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.Vision;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -21,17 +28,22 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // robot wide states
+  boolean m_isJoyConEnabled = true; 
+
+  // subsystem init
+  private final Vision m_vision = new Vision();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain();
+  private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private SendableChooser<Command> m_autoChooser; 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    frc4669.Logging.StartLogger();
+    
     // Configure the trigger bindings
     configureBindings();
   }
@@ -45,27 +57,31 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // m_drivetrain.setDefaultCommand(new RunCommand(()->{
-    //   m_drivetrain.SetSwerveOutput(m_driverController.getLeftX(), m_driverController.getRightY());
-      
-    // }, m_drivetrain));
-    
-
+  private void configureBindings() {   
+    // NOTE!!!!: Y axes are negative ON THE CONTROLLER, the others are not
+    // Rotation should be CCW positive
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
-      double forward = frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05);
-      double strafe = frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05);
-      double rotation = frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05);
+      if (!m_isJoyConEnabled) return; // do nothing if joystick controls disabled
 
-      m_swerveDrivetrain.drive(frc4669.squareInput(forward) * 0.9, frc4669.squareInput(strafe) * -0.9, rotation * -0.9);
+      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.1)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
+
+      m_swerveDrivetrain.drive(forward, strafe, rotation);
     }, m_swerveDrivetrain));
 
-    // m_driverController.a().onTrue(Commands.runOnce(() -> {
-      // m_swerveDrivetrain.ZeroSwerveModules();
-    // }, m_swerveDrivetrain));
+    // Trigger on SmartDash Board button
+    SmartDashboard.putBoolean("Joystick Control Enabled", m_isJoyConEnabled);
+    new Trigger(() -> {return SmartDashboard.getBoolean("Joystick Control Enabled", true);})
+      .onFalse(Commands.runOnce(() -> {m_isJoyConEnabled = false;}))
+      .onTrue(Commands.runOnce(() -> {m_isJoyConEnabled = true;}));
 
+    m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
     m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
     m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
+
+    this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
   }
 
   /**
@@ -74,7 +90,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return m_autoChooser.getSelected(); 
   }
 }
