@@ -47,6 +47,8 @@ import frc.robot.Vision;
 import frc.robot.frc4669;
 
 public class SwerveDrivetrain extends SubsystemBase {
+  private boolean m_isZeroed = false; 
+
   private Vision m_vision; 
 
   private SwerveModule[] m_modules; // Clockwise from front left
@@ -55,19 +57,11 @@ public class SwerveDrivetrain extends SubsystemBase {
   private SwerveDriveKinematics m_kinematics;
   private CorrectAxisSwerveOdometry m_odometry;
 
-  private WPI_TalonSRX m_swerveZeroingEncoder;
-  private DutyCycleEncoder m_swervePWMEncoder; 
-
   private final Field2d m_field = new Field2d(); 
-
-  private double m_prevAngle = 0; 
-  private long m_prevTime = 0;
 
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain(Vision vision) {
     m_vision = vision;
-    // m_swervePWMEncoder = new DutyCycleEncoder(9); 
-    // m_swervePWMEncoder.setDutyCycleRange(1/4096, 4096/4096);
 
     m_gyro = new AHRS(SPI.Port.kMXP);
     m_kinematics = new SwerveDriveKinematics(
@@ -82,11 +76,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_modules[1] = new SwerveModule(Constants.Swerve.M3);
     m_modules[2] = new SwerveModule(Constants.Swerve.M2);
     m_modules[3] = new SwerveModule(Constants.Swerve.M4);
-
-    m_modules[0].resetAzimuth();
-    m_modules[1].resetAzimuth();
-    m_modules[2].resetAzimuth();
-    m_modules[3].resetAzimuth();
     
     // grab the current vision position or assume we start at 0, 0 with yaw 0
     Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
@@ -112,26 +101,12 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public Command ZeroSwerveModules() {
     return new SequentialCommandGroup(
-      m_modules[0].setSteerOffset(this),        
-      m_modules[1].setSteerOffset(this),    
-      m_modules[2].setSteerOffset(this),    
-      m_modules[3].setSteerOffset(this)
+      m_modules[0].zeroSteer(this),        
+      m_modules[1].zeroSteer(this),    
+      m_modules[2].zeroSteer(this),    
+      m_modules[3].zeroSteer(this),
+      runOnce(() -> m_isZeroed = true)
     );
-    // }).andThen(run(()->{}).until(()-> {
-    //   int numFinished = 0;  
-    //   for (SwerveModule module : m_modules) {
-    //     double currentDeg = module.angle().getDegrees(); 
-    //     if (currentDeg >= -10 && currentDeg <= 10) 
-    //       numFinished += 1;
-    //   }
-    //   if (numFinished >= 4) return true;
-    //   else return false;
-    // }));
-    // double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
-    // double currentAbsPos = (double)m_swervePWMEncoder.getAbsolutePosition() * 360.0; 
-    // System.out.println(m_swervePWMEncoder.getAbsolutePosition());
-    // System.out.println(currentAbsPos);
-    // m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
   }
 
   @Override
@@ -148,11 +123,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_odometry.addVisionMeasurement(pos, pos.ts)); 
 
     m_field.setRobotPose(getRobotPose());
-
-m_modules[0].getSteerAbsPosition();
-m_modules[1].getSteerAbsPosition();
-m_modules[2].getSteerAbsPosition();
-m_modules[3].getSteerAbsPosition();
   }
 
   // drive using speed inputs
@@ -167,6 +137,8 @@ m_modules[3].getSteerAbsPosition();
 
   // drive using ChassisSpeeds
   public void drive(ChassisSpeeds speeds, boolean usePID) {
+    if (!m_isZeroed) return; // exit if not zeroed 
+
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Swerve.kMaxAttainableSpeed);
 

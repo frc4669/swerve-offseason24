@@ -28,9 +28,11 @@ import frc.robot.Vision;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Vision m_vision = new Vision();
+  // robot wide states
+  boolean m_isJoyConEnabled = true; 
 
   // subsystem init
+  private final Vision m_vision = new Vision();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
@@ -41,6 +43,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     frc4669.Logging.StartLogger();
+    
     // Configure the trigger bindings
     configureBindings();
   }
@@ -54,25 +57,24 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // m_drivetrain.setDefaultCommand(new RunCommand(()->{
-    //   m_drivetrain.SetSwerveOutput(m_driverController.getLeftX(), m_driverController.getRightY());
-      
-    // }, m_drivetrain));
-    
+  private void configureBindings() {   
     // NOTE!!!!: Y axes are negative ON THE CONTROLLER, the others are not
     // Rotation should be CCW positive
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
-      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
-      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.05)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
-      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.05)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
+      if (!m_isJoyConEnabled) return; // do nothing if joystick controls disabled
+
+      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.1)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
 
       m_swerveDrivetrain.drive(forward, strafe, rotation);
     }, m_swerveDrivetrain));
 
-    // m_driverController.a().onTrue(Commands.runOnce(() -> {
-      // m_swerveDrivetrain.ZeroSwerveModules();
-    // }, m_swerveDrivetrain));
+    // Trigger on SmartDash Board button
+    SmartDashboard.putBoolean("Joystick Control Enabled", m_isJoyConEnabled);
+    new Trigger(() -> {return SmartDashboard.getBoolean("Joystick Control Enabled", true);})
+      .onFalse(Commands.runOnce(() -> {m_isJoyConEnabled = false;}))
+      .onTrue(Commands.runOnce(() -> {m_isJoyConEnabled = true;}));
 
     m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
     m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
@@ -80,8 +82,6 @@ public class RobotContainer {
 
     this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
-
-    // m_swerveDrivetrain.ZeroSwerveModules();
   }
 
   /**
