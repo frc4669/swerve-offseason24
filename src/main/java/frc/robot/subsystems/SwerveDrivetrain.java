@@ -111,12 +111,14 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public Command ZeroSwerveModules() {
-    return new SequentialCommandGroup(
-      m_modules[0].setSteerOffset(this),        
-      m_modules[1].setSteerOffset(this),    
-      m_modules[2].setSteerOffset(this),    
-      m_modules[3].setSteerOffset(this)
+    var cmd =  new ParallelCommandGroup(
+      m_modules[0].setSteerOffset(),        
+      m_modules[1].setSteerOffset(),    
+      m_modules[2].setSteerOffset(),    
+      m_modules[3].setSteerOffset()
     );
+    cmd.addRequirements(this);
+    return cmd;
     // }).andThen(run(()->{}).until(()-> {
     //   int numFinished = 0;  
     //   for (SwerveModule module : m_modules) {

@@ -87,8 +87,8 @@ public class SwerveModule {
     }
 
     private double m__outputAngle; 
-    public Command setSteerOffset(SubsystemBase driveSubsystemRef) {
-        return driveSubsystemRef.runOnce(() -> {
+    public Command setSteerOffset() {
+        return Commands.runOnce(() -> {
             double currentAbsAngle = getSteerAbsPosition(); 
             double targetAbsAngle = m_config.steerAlignedAbsPosition * 360; 
             m__outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
@@ -97,7 +97,7 @@ public class SwerveModule {
             double currentAngle = angle().getDegrees() % 360.0; 
             return (currentAngle >= m__outputAngle-3 && currentAngle <= m__outputAngle+3) && m_steerMotor.getVelocity().getValueAsDouble() < 1; 
         })).andThen(
-            driveSubsystemRef.runOnce(()-> {
+            Commands.runOnce(()-> {
                 m_steerMotor.setPosition(0); 
                 m_steerMotor.setControl(m_steerPositionCtrl.withPosition(0));
             })
