@@ -47,6 +47,7 @@ public class SwerveModule {
         steerMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveSteerGearRatio / 360;
         steerMotorConfig.Slot0.kP = config.kpSteer;
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
+        m_steerMotor.setPosition(0); // reset cached encoder values between code restarts
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
         driveMotorConfig.MotorOutput.Inverted = config.driveInverted; 
@@ -102,9 +103,5 @@ public class SwerveModule {
                 m_steerMotor.setControl(m_steerPositionCtrl.withPosition(0));
             })
         );
-    }
-
-    public void resetAzimuth() { // PROBABLY NOT SAFE, REMOVE WHEN ABS ENCODERS ARE ADDED
-        m_steerMotor.setPosition(0);
     }
 }

@@ -83,11 +83,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_modules[2] = new SwerveModule(Constants.Swerve.M2);
     m_modules[3] = new SwerveModule(Constants.Swerve.M4);
 
-    m_modules[0].resetAzimuth();
-    m_modules[1].resetAzimuth();
-    m_modules[2].resetAzimuth();
-    m_modules[3].resetAzimuth();
-    
     // grab the current vision position or assume we start at 0, 0 with yaw 0
     Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
     m_odometry = new CorrectAxisSwerveOdometry(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
@@ -111,7 +106,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   public Command ZeroSwerveModules() {
-    var cmd =  new ParallelCommandGroup(
+    var cmd = new ParallelCommandGroup(
       m_modules[0].setSteerOffset(),        
       m_modules[1].setSteerOffset(),    
       m_modules[2].setSteerOffset(),    
