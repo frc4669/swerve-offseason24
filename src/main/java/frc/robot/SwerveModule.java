@@ -32,7 +32,7 @@ public class SwerveModule {
     private TalonFXConfiguration steerMotorConfig; 
     private PositionDutyCycle m_steerPositionCtrl;
     private VelocityDutyCycle m_driveVelocityCtrl;
-    private double m_steerOffset = 0; 
+    private boolean m_isZeroed = false; 
 
     public SwerveModule(SwerveModuleConfig config) {
         m_config = config;
@@ -60,7 +60,8 @@ public class SwerveModule {
 
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
         if (!enabled) return;
-        
+        if (!m_isZeroed) return;
+
         state = frc4669.SwerveOptimizeAngle(state, angle());
 
         if (usePID) m_driveMotor.setControl(m_driveVelocityCtrl.withVelocity(state.speedMetersPerSecond));
@@ -74,7 +75,7 @@ public class SwerveModule {
     }
 
     public Rotation2d angle() {
-        double pos = m_steerMotor.getPosition().refresh().getValueAsDouble() - m_steerOffset;
+        double pos = m_steerMotor.getPosition().refresh().getValueAsDouble();
         return Rotation2d.fromDegrees(pos);
     }
 
@@ -88,20 +89,24 @@ public class SwerveModule {
     }
 
     private double m__outputAngle; 
+
     public Command setSteerOffset() {
         return Commands.runOnce(() -> {
+            // calculate and go to the actual zero position
             double currentAbsAngle = getSteerAbsPosition(); 
             double targetAbsAngle = m_config.steerAlignedAbsPosition * 360; 
             m__outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
             m_steerMotor.setControl(m_steerPositionCtrl.withPosition(m_steerMotor.getPosition().getValueAsDouble() + m__outputAngle));
         }).alongWith(Commands.waitUntil(()-> {
             double currentAngle = angle().getDegrees() % 360.0; 
-            return (currentAngle >= m__outputAngle-3 && currentAngle <= m__outputAngle+3) && m_steerMotor.getVelocity().getValueAsDouble() < 1; 
-        })).andThen(
+            return (currentAngle >= m__outputAngle-1 && currentAngle <= m__outputAngle+1) && m_steerMotor.getVelocity().getValueAsDouble() < 0.05; 
+        })).andThen( // reset encoder again
             Commands.runOnce(()-> {
                 m_steerMotor.setPosition(0); 
                 m_steerMotor.setControl(m_steerPositionCtrl.withPosition(0));
+                m_isZeroed = true;
             })
-        );
+        // module is only calibrated once, calibrating again WILL break the module
+        ).onlyIf(() -> {return !m_isZeroed;});
     }
 }
