@@ -11,6 +11,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.pivit;
+import frc.robot.subsystems.Intake;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
   private final pivit m_pivit = new pivit();
+  private final Intake m_intake = new Intake(); 
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
