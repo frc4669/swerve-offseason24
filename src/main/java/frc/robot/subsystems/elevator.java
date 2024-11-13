@@ -11,19 +11,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
-public class pivit extends SubsystemBase {
-    private TalonFX biceps;
-    private PositionVoltage bicepy = new PositionVoltage(0);
-  public pivit() {
-    biceps = new TalonFX(0); 
+public class elevator extends SubsystemBase {
+    private TalonFX hamstring;
+    private PositionVoltage hamstringy = new PositionVoltage(0);
+  public elevator() {
+    hamstring = new TalonFX(0); 
     TalonFXConfiguration motorConfig = frc4669.GetFalcon500DefaultConfig();
     motorConfig.Slot0.kP = 1;
     motorConfig.Slot0.kD = 0;     
     motorConfig.Slot0.kI = 0;
-    biceps.getConfigurator().apply(motorConfig); 
-
-
-
+    hamstring.getConfigurator().apply(motorConfig); 
   }
 
   @Override
@@ -34,25 +31,14 @@ public class pivit extends SubsystemBase {
   
     return runOnce(() -> {
       // code 
-      biceps.setControl(bicepy.withPosition(pos));
+      hamstring.setControl(hamstringy.withPosition(pos));
 
     });
   }
 
-
-  public Command Startme(double speed) {
+  public Command Stopham() {
     return runOnce(() -> {
-      biceps.set(0.5);  
-    });
-  }
-  public Command Stopme() {
-    return runOnce(() -> {
-      biceps.set(0.0);
-    });
-  }
-  public Command Stopbiceps() {
-    return runOnce(() -> {
-      biceps.set(0.0);
+      hamstring.set(0.0);
     });
   }
 }
