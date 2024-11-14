@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Vision;
+import frc.robot.subsystems.Elevator;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -38,6 +39,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
   private final pivit m_pivit = new pivit();
+  private final Elevator m_elevator = new Elevator(); 
   private final Intake m_intake = new Intake(); 
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
 

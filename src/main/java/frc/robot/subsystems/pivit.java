@@ -10,16 +10,17 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import frc.robot.Constants;
 
-public class pivit extends SubsystemBase {
+public class Pivit extends SubsystemBase {
     private TalonFX biceps;
     private PositionVoltage bicepy = new PositionVoltage(0);
-  public pivit() {
-    biceps = new TalonFX(0); 
+  public Pivit() {
+    biceps = new TalonFX(Constants.Pivit.kMotorCANID); 
     TalonFXConfiguration motorConfig = frc4669.GetFalcon500DefaultConfig();
-    motorConfig.Slot0.kP = 1;
-    motorConfig.Slot0.kD = 0;     
-    motorConfig.Slot0.kI = 0;
+    motorConfig.Slot0.kP = Constants.Pivit.kP;
+    motorConfig.Slot0.kD = Constants.Pivit.kD;     
+    motorConfig.Slot0.kI = Constants.Pivit.kI;
     biceps.getConfigurator().apply(motorConfig); 
 
 
