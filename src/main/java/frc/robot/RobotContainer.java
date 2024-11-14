@@ -10,7 +10,7 @@ import frc.robot.frc4669.Logging;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.pivit;
+import frc.robot.subsystems.Pivit;
 import frc.robot.subsystems.Intake;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
-  private final pivit m_pivit = new pivit();
+  private final Pivit m_pivit = new Pivit();
   private final Elevator m_elevator = new Elevator(); 
   private final Intake m_intake = new Intake(); 
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
