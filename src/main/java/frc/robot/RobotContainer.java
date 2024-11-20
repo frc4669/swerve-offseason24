@@ -38,9 +38,9 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrivetrain m_swerveDrivetrain = new SwerveDrivetrain(m_vision);
-  private final Pivit m_pivit = new Pivit();
+  // private final Pivit m_pivit = new Pivit();
   private final Elevator m_elevator = new Elevator(); 
-  private final Intake m_intake = new Intake(); 
+  // private final Intake m_intake = new Intake(); 
   // private final Drivetrain m_drivetrain = new Drivetrain(); 
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -82,9 +82,12 @@ public class RobotContainer {
       .onFalse(Commands.runOnce(() -> {m_isJoyConEnabled = false;}))
       .onTrue(Commands.runOnce(() -> {m_isJoyConEnabled = true;}));
 
-    m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
-    m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
-    m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
+    // m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
+    // m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
+    // m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
+    m_driverController.y().onTrue(m_elevator.SetPosition(50));
+    m_driverController.a().onTrue(m_elevator.SetPosition(0));
+
 
     this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
