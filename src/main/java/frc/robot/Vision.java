@@ -25,7 +25,7 @@ public class Vision {
   public Vision() {
     this.m_nt = NetworkTableInstance.getDefault(); 
     var smartDashboardTable = m_nt.getTable("SmartDashboard"); 
-    this.m_visionTable = smartDashboardTable.getSubTable("Vision"); 
+    this.m_visionTable = m_nt.getTable("Vision"); 
     this.m_cncTable = smartDashboardTable.getSubTable("C&C"); 
     this.m_robotPosTable = m_visionTable.getSubTable("RobotPos"); 
   }
@@ -50,7 +50,10 @@ public class Vision {
     var ts = this.m_robotPosTable.getValue("ts"); 
      
     // make sure the values actually exist
-    if (!x.isDouble() || !y.isDouble() || !r.isDouble() || !ts.isDouble()) return Optional.empty(); 
+    if (!x.isDouble() || !y.isDouble() || !r.isDouble() || !ts.isDouble()) return Optional.empty();
+    
+    // make sure a valid timestamp that's not negative or zero 
+    if (ts.getDouble() < 1) return Optional.empty();
     return Optional.of(new VisionRobotPos(x.getDouble(), y.getDouble(), r.getDouble(), ts.getDouble())); 
   }
 
