@@ -1,0 +1,26 @@
+{
+  "Clients": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "4669"
+  },
+  "transitory": {
+    "Vision": {
+      "Cameras": {
+        "90FOV_Short": {
+          "7": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "RobotPos": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

@@ -100,7 +100,7 @@ public class SwerveModule {
         }).alongWith(Commands.waitUntil(()-> {
             double currentAngle = angle().getDegrees() % 360.0; 
             return (currentAngle >= m__outputAngle-1 && currentAngle <= m__outputAngle+1) && m_steerMotor.getVelocity().getValueAsDouble() < 0.05; 
-        })).andThen( // reset encoder again
+        }).raceWith(Commands.waitSeconds(1))).andThen( // reset encoder again
             Commands.runOnce(()-> {
                 m_steerMotor.setPosition(0); 
                 m_steerMotor.setControl(m_steerPositionCtrl.withPosition(0));
