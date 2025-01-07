@@ -47,7 +47,7 @@ public class SwerveModule {
         steerMotorConfig.Feedback.SensorToMechanismRatio = Swerve.kSwerveSteerGearRatio / 360;
         steerMotorConfig.Slot0.kP = config.kpSteer;
         m_steerMotor.getConfigurator().apply(steerMotorConfig);
-        m_steerMotor.setPosition(0); // reset the internal motor encoder position 
+        m_steerMotor.setPosition(0); // reset cached encoder values between code restarts
 
         TalonFXConfiguration driveMotorConfig = frc4669.GetFalcon500DefaultConfig();
         driveMotorConfig.MotorOutput.Inverted = config.driveInverted; 
@@ -89,8 +89,9 @@ public class SwerveModule {
     }
 
     private double m__outputAngle; 
-    public Command zeroSteer(SubsystemBase driveSubsystemRef) {
-        return driveSubsystemRef.runOnce(() -> {
+
+    public Command setSteerOffset() {
+        return Commands.runOnce(() -> {
             // calculate and go to the actual zero position
             double currentAbsAngle = getSteerAbsPosition(); 
             double targetAbsAngle = m_config.steerAlignedAbsPosition * 360; 
@@ -99,8 +100,8 @@ public class SwerveModule {
         }).alongWith(Commands.waitUntil(()-> {
             double currentAngle = angle().getDegrees() % 360.0; 
             return (currentAngle >= m__outputAngle-1 && currentAngle <= m__outputAngle+1) && m_steerMotor.getVelocity().getValueAsDouble() < 0.05; 
-        })).andThen( // reset encoder again
-            driveSubsystemRef.runOnce(()-> {
+        }).raceWith(Commands.waitSeconds(1))).andThen( // reset encoder again
+            Commands.runOnce(()-> {
                 m_steerMotor.setPosition(0); 
                 m_steerMotor.setControl(m_steerPositionCtrl.withPosition(0));
                 m_isZeroed = true;

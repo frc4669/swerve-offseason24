@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import frc.robot.CorrectAxisSwerveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -55,9 +56,10 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   private AHRS m_gyro;
   private SwerveDriveKinematics m_kinematics;
-  private CorrectAxisSwerveOdometry m_odometry;
+  private SwerveDrivePoseEstimator m_odometry;
 
   private final Field2d m_field = new Field2d(); 
+  private final Field2d m_visionField = new Field2d();
 
   /** Creates a new SwerveDrivetrain. */
   public SwerveDrivetrain(Vision vision) {
@@ -79,7 +81,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     
     // grab the current vision position or assume we start at 0, 0 with yaw 0
     Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
-    m_odometry = new CorrectAxisSwerveOdometry(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
+    m_odometry = new SwerveDrivePoseEstimator(m_kinematics, angleRot2d(), swerveModulePositions(), robotStartPose);
 
     // Auto set up
     AutoBuilder.configureHolonomic(
@@ -97,16 +99,33 @@ public class SwerveDrivetrain extends SubsystemBase {
     );
 
     SmartDashboard.putData(m_field);
+    SmartDashboard.putData("Vision Pose", m_visionField);
   }
 
   public Command ZeroSwerveModules() {
-    return new SequentialCommandGroup(
-      m_modules[0].zeroSteer(this),        
-      m_modules[1].zeroSteer(this),    
-      m_modules[2].zeroSteer(this),    
-      m_modules[3].zeroSteer(this),
-      runOnce(() -> m_isZeroed = true)
-    );
+    var cmd = new ParallelCommandGroup(
+      m_modules[0].setSteerOffset(),        
+      m_modules[1].setSteerOffset(),    
+      m_modules[2].setSteerOffset(),    
+      m_modules[3].setSteerOffset()
+    ).andThen(runOnce(() -> m_isZeroed = true));
+    cmd.addRequirements(this);
+    return cmd;
+    // }).andThen(run(()->{}).until(()-> {
+    //   int numFinished = 0;  
+    //   for (SwerveModule module : m_modules) {
+    //     double currentDeg = module.angle().getDegrees(); 
+    //     if (currentDeg >= -10 && currentDeg <= 10) 
+    //       numFinished += 1;
+    //   }
+    //   if (numFinished >= 4) return true;
+    //   else return false;
+    // }));
+    // double currentAbsPos = (((double)m_swerveZeroingEncoder.getSensorCollection().getPulseWidthPosition())/Constants.Swerve.kSRXPlusePerRoatation) * 360;
+    // double currentAbsPos = (double)m_swervePWMEncoder.getAbsolutePosition() * 360.0; 
+    // System.out.println(m_swervePWMEncoder.getAbsolutePosition());
+    // System.out.println(currentAbsPos);
+    // m_modules[1].zeroSteering(currentAbsPos % 360,Constants.Swerve.kFrontLeftZero);
   }
 
   @Override
@@ -118,9 +137,14 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees());
     SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees());
 
-    m_odometry.update(Rotation2d.fromDegrees(-angle()), swerveModulePositions()); 
+    m_vision.GetVisionRobotPos().ifPresent((pos) -> m_visionField.setRobotPose(pos));
+
+    m_odometry.update(angleRot2d(), swerveModulePositions()); 
+
     // if vision angles exist, fuse it with gyro measurements
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_odometry.addVisionMeasurement(pos, pos.ts)); 
+
+    SmartDashboard.putNumber("odometery X", getRobotPose().getX());
 
     m_field.setRobotPose(getRobotPose());
   }

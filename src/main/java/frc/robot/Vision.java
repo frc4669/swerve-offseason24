@@ -10,6 +10,7 @@ import frc.robot.frc4669;
 import frc.robot.Constants;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -25,7 +26,7 @@ public class Vision {
   public Vision() {
     this.m_nt = NetworkTableInstance.getDefault(); 
     var smartDashboardTable = m_nt.getTable("SmartDashboard"); 
-    this.m_visionTable = smartDashboardTable.getSubTable("Vision"); 
+    this.m_visionTable = m_nt.getTable("Vision"); 
     this.m_cncTable = smartDashboardTable.getSubTable("C&C"); 
     this.m_robotPosTable = m_visionTable.getSubTable("RobotPos"); 
   }
@@ -42,16 +43,27 @@ public class Vision {
     }
   }
 
+  // TODO
+  public Optional<Pose2d> GetTagPoseRelativeToRobot(int tagID) {
+    
+
+    return Optional.empty();
+
+  }
+
   // get robot absoulote position from NetworkTables
   public Optional<VisionRobotPos> GetVisionRobotPos() {
     var x = this.m_robotPosTable.getValue("x");
     var y = this.m_robotPosTable.getValue("y");
     var r = this.m_robotPosTable.getValue("r");
     var ts = this.m_robotPosTable.getValue("ts"); 
-     
+    
     // make sure the values actually exist
-    if (!x.isDouble() || !y.isDouble() || !r.isDouble() || !ts.isDouble()) return Optional.empty(); 
-    return Optional.of(new VisionRobotPos(x.getDouble(), y.getDouble(), r.getDouble(), ts.getDouble())); 
+    if (!x.isDouble() || !y.isDouble() || !r.isDouble() || !ts.isInteger()) return Optional.empty();
+    
+    // make sure a valid timestamp that's not negative or zero 
+    if (ts.getInteger() < 1) return Optional.empty();
+    return Optional.of(new VisionRobotPos(x.getDouble(), y.getDouble(), r.getDouble(), ts.getInteger())); 
   }
 
   // get parameters of a command
