@@ -102,7 +102,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putData("Vision Pose", m_visionField);
   }
 
-  public Command ZeroSwerveModules() {
+  public Command ZeroSwerveModules() {    // align instead of Zero maybe
     var cmd = new ParallelCommandGroup(
       m_modules[0].setSteerOffset(),        
       m_modules[1].setSteerOffset(),    
@@ -130,12 +130,17 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    for (var module : m_modules) {
+      module.debug();
+    }
+
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Gyro", angle());
-    SmartDashboard.putNumber("M1 Azimuth", m_modules[0].angle().getDegrees());
-    SmartDashboard.putNumber("M2 Azimuth", m_modules[2].angle().getDegrees());
-    SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees());
-    SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees());
+    SmartDashboard.putNumber("M1 Azimuth", m_modules[0].angle().getDegrees() % 360);
+    SmartDashboard.putNumber("M2 Azimuth", m_modules[2].angle().getDegrees() % 360);
+    SmartDashboard.putNumber("M3 Azimuth", m_modules[1].angle().getDegrees() % 360);
+    SmartDashboard.putNumber("M4 Azimuth", m_modules[3].angle().getDegrees() % 360);
 
     m_vision.GetVisionRobotPos().ifPresent((pos) -> m_visionField.setRobotPose(pos));
 
@@ -190,15 +195,16 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   public void resetAngle() {
     m_gyro.reset();
+    m_odometry.resetPosition(angleRot2d(), swerveModulePositions(), new Pose2d());
   }
 
   // get a list of all module positions (distance traveled, steer angle) 
   public SwerveModulePosition[] swerveModulePositions() {
     return new SwerveModulePosition[] {
-      new SwerveModulePosition(m_modules[0].distanceTraveled(), m_modules[0].angle()), 
-      new SwerveModulePosition(m_modules[1].distanceTraveled(), m_modules[1].angle()), 
-      new SwerveModulePosition(m_modules[2].distanceTraveled(), m_modules[2].angle()), 
-      new SwerveModulePosition(m_modules[3].distanceTraveled(), m_modules[3].angle())
+      new SwerveModulePosition(m_modules[0].distanceTraveled(), Rotation2d.fromDegrees(m_modules[0].angle().getDegrees() % 360) ), 
+      new SwerveModulePosition(m_modules[1].distanceTraveled(), Rotation2d.fromDegrees(m_modules[1].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(m_modules[2].distanceTraveled(), Rotation2d.fromDegrees(m_modules[2].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(m_modules[3].distanceTraveled(), Rotation2d.fromDegrees(m_modules[3].angle().getDegrees() % 360))
     };
   }
 
@@ -206,4 +212,28 @@ public class SwerveDrivetrain extends SubsystemBase {
     return m_odometry.getEstimatedPosition(); 
   }
   
+  public void driveTowardsPose(Pose2d target, double speed) {
+    Pose2d current = getRobotPose();
+
+    double strafe = 0;
+    if (Math.abs(current.getX() - target.getX()) <= 0.2) {
+      if (current.getX() < target.getX()) {
+        strafe = speed;
+      } else {
+        strafe = -speed;
+      }
+    }
+
+    double forward = 0;
+    if (Math.abs(current.getY() - target.getY()) <= 0.2) {
+      if (current.getY() < target.getY()) {
+        forward = speed;
+      } else {
+        forward = -speed;
+      }
+    }
+
+    drive(forward, strafe, 0);
+  }
+
 }

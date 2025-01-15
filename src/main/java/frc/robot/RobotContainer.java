@@ -79,6 +79,12 @@ public class RobotContainer {
     m_driverController.x().onTrue(m_swerveDrivetrain.ZeroSwerveModules()); 
     m_driverController.y().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetSteeringPositions(), m_swerveDrivetrain));
     m_driverController.a().onTrue(Commands.runOnce(() -> m_swerveDrivetrain.resetAngle(), m_swerveDrivetrain));
+    m_driverController.b().whileTrue(Commands.run(() -> {
+      var pose = m_vision.GetTagPoseRelativeToCamera("90FOV_Short", 3);
+      if (pose.isPresent()) {
+        m_swerveDrivetrain.driveTowardsPose(pose.get(), 0.25);
+      }
+    }, m_swerveDrivetrain));
 
     this.m_autoChooser = AutoBuilder.buildAutoChooser(); // load in all the paths
     SmartDashboard.putData("Auto Chooser", m_autoChooser);

@@ -6,7 +6,11 @@
     "mode": "Client (NT4)",
     "serverTeam": "4669"
   },
+  "precision": 10,
   "transitory": {
+    "SmartDashboard": {
+      "open": true
+    },
     "Vision": {
       "Cameras": {
         "90FOV_Short": {

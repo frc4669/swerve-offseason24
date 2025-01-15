@@ -58,6 +58,10 @@ public class SwerveModule {
         m_driveMotor.getConfigurator().apply(driveMotorConfig);
     }
 
+    public void debug() {
+        SmartDashboard.putNumber("ENC" + m_steerAbsloute.getSourceChannel(), getSteerAbsPosition());
+    }
+
     public void setState(SwerveModuleState state, boolean usePID, boolean enabled) {
         if (!enabled) return;
         if (!m_isZeroed) return;
@@ -84,7 +88,6 @@ public class SwerveModule {
     }
 
     public double getSteerAbsPosition() {
-        SmartDashboard.putNumber("ENC" + m_steerAbsloute.getSourceChannel(), m_steerAbsloute.getAbsolutePosition()*360);
         return (m_steerAbsloute.getAbsolutePosition() * 360) % 360;
     }
 
@@ -94,7 +97,7 @@ public class SwerveModule {
         return Commands.runOnce(() -> {
             // calculate and go to the actual zero position
             double currentAbsAngle = getSteerAbsPosition(); 
-            double targetAbsAngle = m_config.steerAlignedAbsPosition * 360; 
+            double targetAbsAngle = m_config.steerAlignedAbsPosition; 
             m__outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
             m_steerMotor.setControl(m_steerPositionCtrl.withPosition(m_steerMotor.getPosition().getValueAsDouble() + m__outputAngle));
         }).alongWith(Commands.waitUntil(()-> {
