@@ -74,10 +74,10 @@ public class SwerveDrivetrain extends SubsystemBase {
     );
 
     m_modules = new SwerveModule[4];
-    m_modules[0] = new SwerveModule(Constants.Swerve.M1);
-    m_modules[1] = new SwerveModule(Constants.Swerve.M3);
-    m_modules[2] = new SwerveModule(Constants.Swerve.M2);
-    m_modules[3] = new SwerveModule(Constants.Swerve.M4);
+    m_modules[0] = new SwerveModule(Constants.Swerve.M2);
+    m_modules[1] = new SwerveModule(Constants.Swerve.M4);
+    m_modules[2] = new SwerveModule(Constants.Swerve.M1);
+    m_modules[3] = new SwerveModule(Constants.Swerve.M3);
     
     // grab the current vision position or assume we start at 0, 0 with yaw 0
     Vision.VisionRobotPos robotStartPose = vision.GetVisionRobotPos().orElse(m_vision.new VisionRobotPos());     
@@ -201,10 +201,10 @@ public class SwerveDrivetrain extends SubsystemBase {
   // get a list of all module positions (distance traveled, steer angle) 
   public SwerveModulePosition[] swerveModulePositions() {
     return new SwerveModulePosition[] {
-      new SwerveModulePosition(-m_modules[0].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[0].angle().getDegrees() % 360)), 
-      new SwerveModulePosition(-m_modules[1].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[1].angle().getDegrees() % 360)), 
-      new SwerveModulePosition(-m_modules[2].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[2].angle().getDegrees() % 360)), 
-      new SwerveModulePosition(-m_modules[3].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[3].angle().getDegrees() % 360))
+      new SwerveModulePosition(m_modules[0].distanceTraveled(), Rotation2d.fromDegrees(m_modules[0].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(m_modules[1].distanceTraveled(), Rotation2d.fromDegrees(m_modules[1].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(m_modules[2].distanceTraveled(), Rotation2d.fromDegrees(m_modules[2].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(m_modules[3].distanceTraveled(), Rotation2d.fromDegrees(m_modules[3].angle().getDegrees() % 360))
     };
   }
 

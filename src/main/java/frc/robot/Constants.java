@@ -42,10 +42,10 @@ public final class Constants {
     public static final double kModuleXOffsetAbs = 0.277; 
     public static final double kModuleYOffsetAbs = 0.296; 
     public static final double kModuleDistanceToRobotCenter = Math.sqrt(Math.pow(kModuleXOffsetAbs, 2) + Math.pow(kModuleYOffsetAbs, 2)); 
-    public static final Translation2d kFrontLeftOffset = new Translation2d(-kModuleXOffsetAbs, kModuleYOffsetAbs);
-    public static final Translation2d kFrontRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAPPED WITH REARLEFT
-    public static final Translation2d kRearRightOffset = new Translation2d(kModuleXOffsetAbs, -kModuleYOffsetAbs);
-    public static final Translation2d kRearLeftOffset = new Translation2d(kModuleXOffsetAbs, kModuleYOffsetAbs);
+    public static final Translation2d kFrontLeftOffset = new Translation2d(kModuleXOffsetAbs, kModuleYOffsetAbs);
+    public static final Translation2d kFrontRightOffset = new Translation2d(kModuleXOffsetAbs, -kModuleYOffsetAbs); // SWAPPED WITH REARLEFT
+    public static final Translation2d kRearRightOffset = new Translation2d(-kModuleXOffsetAbs, -kModuleYOffsetAbs);
+    public static final Translation2d kRearLeftOffset = new Translation2d(-kModuleXOffsetAbs, kModuleYOffsetAbs);
     public static final double kFrontLeftZero = (1220 / kSRXPlusePerRoatation) * 360;
 
     public static final double ksDrive = 0;
@@ -56,26 +56,26 @@ public final class Constants {
     public static final double kdDrive = 0;
 
     public static final SwerveModuleConfig M1 = new SwerveModuleConfig(
-      12, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      11, InvertedValue.CounterClockwise_Positive, 0.015, 
+      12, InvertedValue.Clockwise_Positive, kpDrive, kdDrive,
+      11, InvertedValue.Clockwise_Positive, 0.015, 
       9, 76.4006599100
     );
 
     public static final SwerveModuleConfig M2 = new SwerveModuleConfig(
-      14, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      13, InvertedValue.CounterClockwise_Positive, 0.013, 
+      14, InvertedValue.Clockwise_Positive, kpDrive, kdDrive,
+      13, InvertedValue.Clockwise_Positive, 0.013, 
       8, 175.2394813810
     );
 
     public static final SwerveModuleConfig M3 = new SwerveModuleConfig(
-      16, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      15, InvertedValue.CounterClockwise_Positive, 0.017, 
+      16, InvertedValue.Clockwise_Positive, kpDrive, kdDrive,
+      15, InvertedValue.Clockwise_Positive, 0.017, 
       7, 58.7279714682
     );
 
     public static final SwerveModuleConfig M4 = new SwerveModuleConfig(
-      18, InvertedValue.CounterClockwise_Positive, kpDrive, kdDrive,
-      17, InvertedValue.CounterClockwise_Positive, 0.013, 
+      18, InvertedValue.Clockwise_Positive, kpDrive, kdDrive,
+      17, InvertedValue.Clockwise_Positive, 0.013, 
       6, 57.6324734408
     );
   }

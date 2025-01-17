@@ -63,9 +63,9 @@ public class RobotContainer {
     m_swerveDrivetrain.setDefaultCommand(new RunCommand(() -> {
       if (!m_isJoyConEnabled) return; // do nothing if joystick controls disabled
 
-      double forward = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
-      double strafe = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
-      double rotation = frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.1)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
+      double forward = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftY(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double strafe = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getLeftX(), 0.1)) * Constants.Swerve.kSpeedLimit * OperatorConstants.kMovementMultiplier;
+      double rotation = -frc4669.squareInput(frc4669.ApplyJoystickDeadZone(m_driverController.getRightX(), 0.1)) * Constants.Swerve.kMaxAngularSpeed * OperatorConstants.kRotationMultiplier;
 
       m_swerveDrivetrain.drive(forward, strafe, rotation);
     }, m_swerveDrivetrain));

@@ -98,7 +98,7 @@ public class SwerveModule {
             // calculate and go to the actual zero position
             double currentAbsAngle = getSteerAbsPosition(); 
             double targetAbsAngle = m_config.steerAlignedAbsPosition; 
-            m__outputAngle = (currentAbsAngle-targetAbsAngle);  // I don't know why tf it's current - target and not target - current
+            m__outputAngle = (targetAbsAngle - currentAbsAngle);  // I don't know why tf it's current - target and not target - current
             m_steerMotor.setControl(m_steerPositionCtrl.withPosition(m_steerMotor.getPosition().getValueAsDouble() + m__outputAngle));
         }).alongWith(Commands.waitUntil(()-> {
             double currentAngle = angle().getDegrees() % 360.0; 
