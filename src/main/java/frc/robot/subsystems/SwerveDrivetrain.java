@@ -156,7 +156,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // drive using speed inputs
   public void drive(double forward, double strafe, double rotation) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, angleRot2d());
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, angleRot2d().times(-1));
     SmartDashboard.putNumber("rotation input", rotation);
 
     // FOR ROBOT RELATIVE:
@@ -186,7 +186,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // get gyro angle
   public double angle() {
-    return m_gyro.getAngle();
+    return -m_gyro.getAngle();
   }
 
   public Rotation2d angleRot2d() {
@@ -201,10 +201,10 @@ public class SwerveDrivetrain extends SubsystemBase {
   // get a list of all module positions (distance traveled, steer angle) 
   public SwerveModulePosition[] swerveModulePositions() {
     return new SwerveModulePosition[] {
-      new SwerveModulePosition(m_modules[0].distanceTraveled(), Rotation2d.fromDegrees(m_modules[0].angle().getDegrees() % 360) ), 
-      new SwerveModulePosition(m_modules[1].distanceTraveled(), Rotation2d.fromDegrees(m_modules[1].angle().getDegrees() % 360)), 
-      new SwerveModulePosition(m_modules[2].distanceTraveled(), Rotation2d.fromDegrees(m_modules[2].angle().getDegrees() % 360)), 
-      new SwerveModulePosition(m_modules[3].distanceTraveled(), Rotation2d.fromDegrees(m_modules[3].angle().getDegrees() % 360))
+      new SwerveModulePosition(-m_modules[0].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[0].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(-m_modules[1].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[1].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(-m_modules[2].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[2].angle().getDegrees() % 360)), 
+      new SwerveModulePosition(-m_modules[3].distanceTraveled(), Rotation2d.fromDegrees(-m_modules[3].angle().getDegrees() % 360))
     };
   }
 
